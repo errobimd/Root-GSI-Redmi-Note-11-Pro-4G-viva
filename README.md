@@ -1,49 +1,34 @@
-# Automatización de GSI para Redmi Note 11 Pro 4G (viva)
+# ANTIGRAVITY GOOGLE ASSISTANT v5.2 (Redmi Note 11 Pro 4G)
+**Automatización de Élite para GSI en Redmi Note 11 Pro 4G (viva)**
 
-Este repositorio contiene un conjunto de herramientas automatizadas para instalar ROMs Genéricas del Sistema (GSI) en el dispositivo **Xiaomi Redmi Note 11 Pro 4G** (nombre en clave: *viva*), basado en el chipset MediaTek Helio G96.
+Este repositorio es el centro de control definitivo para transformar tu terminal MediaTek en una experiencia Google pura y certificada. Diseñado bajo estándares de seguridad forense para el chipset Helio G96.
 
-## 🚀 Funcionalidades Principales
+## 🚀 Antigravity Google Experience
+A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
+1.  **Certificación GMS:** Herramientas para registrar tu dispositivo y usar Google Wallet/GPay.
+2.  **Seguridad Anti-Brick:** Sistema de validación de integridad de backups que bloquea restauraciones corruptas.
+3.  **Flujo Optimizado:** Menú estructurado por pasos lógicos (Preparación -> Backup -> Flasheo -> Auditoría).
 
-El script principal, `Instalar_GSI_RedmiNote11Pro.ps1`, ha sido diseñado para simplificar un proceso técnico complejo en un flujo de trabajo seguro y auditado:
+## 🛠️ Funcionalidades Maestras
+*   **Safe Operations (v5.2):** Guía de seguridad física integrada (checklist de carga, cables y conexiones).
+*   **Kernel BPF Fix:** Parcheo automático del kernel (boot.img) para restaurar Internet en Android 14/15.
+*   **Auditoría Forense:** Generación de certificados de salud (`CERTIFICADO_FINAL.txt`) para validar cada byte del sistema.
+*   **Kit de Banca:** Todo lo necesario para Magisk, Shamiko y Play Integrity Fix pre-configurado.
 
-1.  **Gestión de Dependencias (Auto-Install):**
-    *   Descarga e instala automáticamente **ADB y Fastboot** (Platform Tools de Google).
-    *   Instala y configura **Python** y las librerías necesarias (`mtkclient`, `capstone`, `keystone`).
-    *   Descarga la herramienta crítica **mtk-bpf-patcher** para corregir problemas de red en Android 14/15.
+## 📂 Estructura del Ecosistema
+*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.2**. El motor de todo el proceso.
+*   `GOOGLE_EXPERIENCE.md`: Guía definitiva para pagos NFC y registro Google Service Framework.
+*   `MANUAL_DE_USO.md`: Instrucciones paso a paso con "Reglas de Oro" de seguridad.
+*   `certificador_salud.ps1`: Utilidad de auditoría técnica.
 
-2.  **Seguridad Anti-Brick (MTKClient):**
-    *   Realiza copias de seguridad profundas (Raw Dump) de particiones vitales: `nvram` (IMEI), `boot`, `vbmeta`, `protect1/2`, `seccfg`.
-    *   Permite la restauración completa del dispositivo a su estado anterior en caso de fallo, interactuando directamente con el modo BROM.
+## 🛡️ Seguridad y Confianza
+El proyecto incluye un sistema de **Auditoría Forense** que valida:
+*   Integridad de binarios (ADB/Fastboot).
+*   Presencia de módulos de seguridad bancaria.
+*   Check de escritura de particiones críticas.
 
-3.  **Corrección de Bugs Críticos:**
-    *   **BPF Fix:** Aplica parches binarios al kernel (`boot.img`) automáticamente para solucionar la falta de conectividad en GSI modernas (debido al kernel legacy 4.14).
-    *   **Overlay:** Facilita la descarga del overlay necesario para corregir el brillo de la pantalla.
+## ⚠️ Disclaimer
+El flasheo es un proceso de riesgo. Este asistente minimiza el error humano mediante validaciones automáticas, pero la responsabilidad final recae en el operador. **Sigue siempre las Reglas de Oro detalladas en el manual.**
 
-4.  **Simulación (Modo Demo):**
-    *   Permite a los usuarios visualizar todo el proceso de flasheo y parcheo sin conectar el dispositivo físico, ideal para aprendizaje y verificación.
-
-## 📂 Estructura del Proyecto
-
-*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro**. Ejecútalo con PowerShell.
-*   `Herramientas/`: Directorio donde se instalan los binarios (ADB, Patcher, etc.).
-*   `Descargas/`: Zona temporal para archivos bajados de internet.
-*   `Backups/`: Almacén de seguridad para tus copias de `nvram` y `boot`.
-*   `ROMs/`: Carpeta donde debes colocar tu imagen `system.img` (LineageOS, PixelExp, etc.).
-*   `leer_docs.py`: Utilidad interna para extraer enlaces de la documentación original.
-
-## 🛠️ Requisitos Previos
-
-*   **PC con Windows 10/11** y PowerShell.
-*   **Python 3.x** instalado y añadido al PATH.
-*   **Cable USB** de buena calidad.
-*   Dispositivo con **Bootloader Desbloqueado**.
-
-## ⚠️ Advertencia
-
-El flasheo de ROMs y la manipulación de particiones conllevan riesgos. Aunque este script incluye medidas de seguridad (Backups), el autor no se hace responsable de daños en el dispositivo. Sigue las instrucciones con cuidado.
-
-## 🔗 Créditos y Referencias
-
-*   **mtk-bpf-patcher:** [R0rt1z2](https://github.com/R0rt1z2/mtk-bpf-patcher)
-*   **mtkclient:** [bkerler](https://github.com/bkerler/mtkclient)
-*   **Documentación Base:** xiaomi-mt6781-devs
+---
+**Desarrollado por Antigravity AI - Google Certified Edition**
