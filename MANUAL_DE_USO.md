@@ -1,52 +1,56 @@
-# MANUAL DE OPERACIÓN: Redmi Note 11 Pro GSI Toolkit (v4.2)
-**Herramienta de Automatización "Anti-Brick" para Xiaomi Redmi Note 11 Pro 4G (viva)**
+# MANUAL DE OPERACIÓN: Security & Banking Edition (v4.5)
+**Solución para Apps de Banca y Certificación Google en Redmi Note 11 Pro 4G**
 
 ---
 
 ## 📋 Introducción
-Este script permite instalar ROMs Genéricas (GSI) basadas en Android 14/15 en tu dispositivo, solucionando automáticamente los problemas de compatibilidad (falta de red, brillo) y protegiendo tu teléfono con copias de seguridad profundas.
-
-## 🚀 Cómo Iniciar
-1.  Asegúrate de tener **Internet** (para descargar herramientas).
-2.  Haz clic derecho en el archivo `Instalar_GSI_RedmiNote11Pro.ps1`.
-3.  Selecciona **"Ejecutar con PowerShell"**.
+Las aplicaciones de bancos (BBVA, Santander, Bancopel, etc.) detectan si el teléfono tiene el bootloader desbloqueado o una ROM GSI. Este kit incluye las herramientas necesarias para ocultar estas modificaciones y permitir el uso normal de tus aplicaciones financieras.
 
 ---
 
-## 🎮 Menú Principal: Explicación de Opciones
+## 🏦 Cómo hacer que funcionen tus Apps de Banca (5 Pasos)
 
-### **[1] Instalar Herramientas**
-*   **Qué hace:** Descarga ADB, Fastboot, Drivers MTK y el Parcheador de Kernel automáticamente.
-*   **Cuándo usar:** La primera vez que abras el script o si cambias de PC.
+### **Paso 1: Descargar el Kit de Seguridad**
+En el script principal (`v4.5`), usa la **Opción 2: PREPARAR APPS DE BANCA**. Esto descargará en tu carpeta `Descargas/`:
+*   `Magisk.apk`
+*   `PlayIntegrityFix.zip`
+*   `Shamiko.zip`
 
-### **[2] Simulación FLASH GSI (Demo)**
-*   **Qué hace:** Muestra una "película" de cómo se verá el proceso de flasheo. No toca tu teléfono.
-*   **Cuándo usar:** Para familiarizarte con los mensajes y pasos antes de hacerlo de verdad.
+### **Paso 2: Instalación de Magisk**
+Una vez tengas la ROM GSI funcionando:
+1.  Pasa el archivo `Magisk.apk` a tu teléfono e instálalo.
+2.  Abre Magisk, ve a ⚙️ (Ajustes) y activa la opción **Zygisk**.
+3.  Reinicia el teléfono.
 
-### **[3] Simulación BACKUP TOTAL + RESTORE (Demo)**
-*   **Qué hace:** Demuestra cómo el script guarda y recupera todo tu sistema en caso de desastre.
-*   **Cuándo usar:** Para entender cómo funciona el sistema "Anti-Brick".
+### **Paso 3: Instalar Módulos**
+1.  En Magisk, ve a la pestaña **Módulos**.
+2.  Pulsa "Instalar desde almacenamiento" y elige `PlayIntegrityFix.zip`.
+3.  Repite el proceso para `Shamiko.zip`.
+4.  Reinicia el teléfono.
 
-### **[4] Modo REAL: Flashear GSI** ⚠️
-*   **Qué hace:** Instala la ROM real en tu teléfono. **BORRARÁ TUS DATOS.**
-*   **Requisitos:** 
-    *   Copia tu ROM GSI (`system.img`) a la carpeta `ROMs`.
-    *   Teléfono conectado en modo BROM (Apagado, mantén Vol+ y Vol-).
+### **Paso 4: Ocultar Magisk (DenyList)**
+1.  Abre Magisk > ⚙️ Ajustes > **Configurar DenyList**.
+2.  Pulsa los 3 puntos (arriba a la derecha) y marca "Mostrar apps de sistema".
+3.  Busca y marca todas las casillas de:
+    *   **Google Play Services** (especialmente `com.google.android.gms.unstable`).
+    *   **Google Play Store**.
+    *   **Tus aplicaciones de banco**.
+4.  **⚠️ IMPORTANTE:** Asegúrate de que "Enforce DenyList" (Forzar DenyList) esté **APAGADO** si vas a usar Shamiko (Shamiko lo gestiona mejor).
 
-### **[5] Modo REAL: Backup Completo** 🛡️
-*   **Qué hace:** Guarda una copia exacta de tu IMEI, Arranque y Seguridad.
-*   **Cuándo usar:** **SIEMPRE** antes de intentar cualquier modificación.
-
-### **[6] Modo REAL: Restaurar Emergencia** 🚑
-*   **Qué hace:** Si tu teléfono no arranca (Brick), usa esta opción para revivirlo usando un backup previo.
-*   **Requisitos:** Haber hecho un backup con la Opción 5 anteriormente.
+### **Paso 5: Limpieza de Datos**
+Ajustes del sistema > Aplicaciones > Ver todas:
+1.  Busca **Google Play Store** -> Almacenamiento -> **Borrar Datos**.
+2.  Busca **Google Play Services** -> Almacenamiento -> **Borrar Datos**.
+3.  Reinicia por última vez.
 
 ---
 
-## 🔧 Glosario Técnico
-*   **BROM:** Modo de bajo nivel de MediaTek. Se accede conectando el móvil apagado manteniendo los dos botones de volumen. Es necesario para los Backups profundos.
-*   **FastbootD:** Modo especial de Fastboot necesario para flashear ROMs en dispositivos modernos con particiones dinámicas.
-*   **BPF Fix:** Parche automático que aplica este script para que tengas Internet en Android 14+.
+## ✅ Verificación
+Descarga la app **"YASNAC"** o **"Play Integrity API Checker"** de la Play Store. Deberías obtener un "PASS" en:
+*   `Basic Integrity`
+*   `Device Integrity`
+
+Si ambos están en verde, tus apps de banco funcionarán perfectamente.
 
 ---
-**Desarrollado por Antigravity AI - v4.2 Stable**
+**Desarrollado por Antigravity AI - v4.5 Security Edition**
