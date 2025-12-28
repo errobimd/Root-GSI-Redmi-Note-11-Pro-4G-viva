@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
     Script de Automatización Integrada para Redmi Note 11 Pro 4G (viva).
-    Versión: 3.1 (REAL INSTALL) - Herramientas Reales, Flasheo Seguro.
+    Versión: 3.2 (FINAL) - Rutas Corregidas y Verificadas.
 
 .DESCRIPTION
     Flujo de trabajo validado.
@@ -53,7 +53,7 @@ function Run-Command {
 function Imprimir-Encabezado {
     Clear-Host
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "   GESTOR INTEGRAL GSI - VIVA - v3.1 (SW REAL)                 " -ForegroundColor Yellow
+    Write-Host "   GESTOR INTEGRAL GSI - VIVA - v3.2 (FINAL)                   " -ForegroundColor Yellow
     if ($SimulationMode) { Write-Host "             *** MODO SIMULACIÓN DE DISPOSITIVO ***              " -ForegroundColor Magenta }
     Write-Host "================================================================" -ForegroundColor Cyan
     Write-Host ""
@@ -62,9 +62,6 @@ function Imprimir-Encabezado {
 function Instalar-Dependencias {
     Write-Host "[*] Instalando Dependencias y Herramientas (REAL)..." -ForegroundColor Yellow
     
-    # NOTA: En la versión v3.1, esto se ejecuta SIEMPRE para asegurar que el usuario tenga el software.
-    # No saltamos este paso en modo simulación.
-
     # 1. Platform Tools (ADB/Fastboot)
     if (-not (Test-Path "$ToolsDir\platform-tools\fastboot.exe")) {
         Write-Host "   [-] Descargando ADB/Fastboot (Google)..."
@@ -111,16 +108,17 @@ function Parchear-Boot {
     param([string]$BootImgPath)
     Write-Host "`n[*] SUB-PROCESO: Parcheo de Kernel (BPF Fix)" -ForegroundColor Yellow
     
-    $PatcherScript = "$ToolsDir\mtk-bpf-patcher-main\patch.py"
+    # RUTA CORREGIDA: mtk_bpf_patcher/main.py
+    $PatcherScript = "$ToolsDir\mtk-bpf-patcher-main\mtk_bpf_patcher\main.py"
     
     # Comprobación REAL de herramientas
     if (-not (Test-Path $PatcherScript)) {
-        Write-Host "   [!] CRÍTICO: No encuentro patch.py. Descarga las herramientas primero." -ForegroundColor Red
+        Write-Host "   [!] CRÍTICO: No encuentro main.py en $PatcherScript" -ForegroundColor Red
         return $null
     }
 
     if ($SimulationMode) {
-        Write-Host "[SIM] Ejecutando: python patch.py $BootImgPath"
+        Write-Host "[SIM] Ejecutando: python $PatcherScript $BootImgPath"
         Write-Host "[SIM] Analizando $BootImgPath buscando instrucciones JIT prohibidas..."
         Start-Sleep -Seconds 1
         Write-Host "[SIM] Aplicando parches NOP en offset 0x0045A..."
@@ -221,8 +219,8 @@ function Flujo-Completo-Auditado {
 do {
     $SimulationMode = $false
     Imprimir-Encabezado
-    Write-Host "1. Instalar Dependencias (REAL)"
-    Write-Host "2. Auditar y Ejecutar SIMULACIÓN (Herramientas Reales, Móvil Simulado)"
+    Write-Host "1. Instalar Dependencias (REAL - YA REALIZADO)"
+    Write-Host "2. Auditar y Ejecutar SIMULACIÓN (Recomendado)"
     Write-Host "3. EJECUTAR PROCESO REAL (Requiere Conexión)"
     Write-Host "4. Salir"
     Write-Host ""
@@ -232,7 +230,8 @@ do {
         '1' { Instalar-Dependencias }
         '2' { 
             $SimulationMode = $true
-            Instalar-Dependencias # Ahora descarga de verdad
+            # Instalar-Dependencias # Ya lo hicimos, saltamos para ir al demo directo si el user quiere (o descomentar)
+            Instalar-Dependencias 
             Realizar-Backup
             Flujo-Completo-Auditado
         }
