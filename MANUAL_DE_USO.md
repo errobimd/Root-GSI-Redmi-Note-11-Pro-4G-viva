@@ -43,4 +43,18 @@ Borra datos de Google Play Store y Servicios de Google Play, y reinicia.
 Usa "Play Integrity API Checker". Si obtienes verde en `Basic` y `Device`, tus bancos funcionarán al 100%.
 
 ---
-**Desarrollado por Antigravity AI - v4.6 Ironclad Guard**
+
+## 🚀 Consejos de Élite para el Flasheo Real (v4.9.2)
+Para garantizar un resultado positivo y evitar el "brick", sigue estas reglas de oro:
+
+1.  **⚡ Energía:** Nunca flashees con menos del 60% de batería. Un apagón accidental a mitad del borrado de particiones es crítico.
+2.  **🔌 El Cable es Vida:** Usa exclusivamente el cable USB original que venía en la caja. Si usas uno de mala calidad, la transferencia de datos de la imagen `system.img` (que pesa GBs) puede fallar.
+3.  **🖥️ Puerto USB Directo:** Si usas un PC de sobremesa, conecta el cable en los puertos **traseros** (los que van directos a la placa base). Los puertos delanteros de las torres suelen tener caídas de voltaje.
+4.  **🛡️ Antivirus:** Algunos programas detectan las herramientas de MediaTek como sospechosas porque actúan a bajo nivel. Desactívalo 10 minutos durante el proceso.
+5.  **🧩 Driver VCOM:** Asegúrate de tener instalados los drivers *MediaTek Preloader VCOM*. Sin ellos, el modo BROM (Backup) no funcionará.
+6.  **🆘 En caso de emergencia:** Si el móvil se queda en un bucle (bootloop), mantén pulsados todos los botones (Vol+, Vol- y Power) para forzar el apagado y entrar de nuevo en modo Fastboot.
+
+**Tu seguridad es nuestra prioridad.** El script v4.9.2 está diseñado para minimizar riesgos, pero el hardware está en tus manos.
+
+---
+**Desarrollado por Antigravity AI - Safe Operations Edition**
