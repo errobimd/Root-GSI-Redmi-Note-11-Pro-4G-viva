@@ -1,0 +1,7 @@
+# Excluir binarios y descargas temporales para mantener el repositorio ligero y profesional
+Descargas/
+Herramientas/
+__pycache__/
+*.zip
+*.img
+*.apk
