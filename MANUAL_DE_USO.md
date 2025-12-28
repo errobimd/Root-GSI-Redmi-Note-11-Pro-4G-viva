@@ -13,7 +13,7 @@ Las aplicaciones de bancos (BBVA, Santander, Bancopel, etc.) detectan si el tel�
 ### **Paso 1: Descargar el Kit de Seguridad**
 En el script principal (`v4.5`), usa la **Opción 2: PREPARAR APPS DE BANCA**. Esto descargará en tu carpeta `Descargas/`:
 *   `Magisk.apk`
-*   `PlayIntegrityFix.zip`
+*   `PlayIntegrityFork.zip` (o similar)
 *   `Shamiko.zip`
 
 ### **Paso 2: Instalación de Magisk**
@@ -24,7 +24,7 @@ Una vez tengas la ROM GSI funcionando:
 
 ### **Paso 3: Instalar Módulos**
 1.  En Magisk, ve a la pestaña **Módulos**.
-2.  Pulsa "Instalar desde almacenamiento" y elige `PlayIntegrityFix.zip`.
+2.  Pulsa "Instalar desde almacenamiento" y elige `PlayIntegrityFork.zip`.
 3.  Repite el proceso para `Shamiko.zip`.
 4.  Reinicia el teléfono.
 

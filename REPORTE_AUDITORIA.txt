@@ -16,7 +16,7 @@ Se analizaron los archivos "Guía Instalación ROMs GSI Redmi Note 11.docx" y el
 ================================================================================
 2. DESARROLLO DE INFRAESTRUCTURA DE SOFTWARE
 ================================================================================
-Se ha creado el script `Instalar_GSI_RedmiNote11Pro.ps1` (v4.4.1) con las siguientes capacidades auditadas:
+Se ha creado el script `Instalar_GSI_RedmiNote11Pro.ps1` (v4.5.1) con las siguientes capacidades auditadas:
 
 A. GESTIÓN DE DEPENDENCIAS (REAL)
    - Implementación de descarga automática de Platform Tools (ADB/Fastboot) desde servidores de Google.
@@ -38,7 +38,7 @@ C. CORRECCIÓN EN TIEMPO REAL (BPF FIX)
 ================================================================================
 - HERRAMIENTAS: Instaladas en carpeta /Herramientas (ADB, Patcher, MtkClient).
 - RECOVERY: OrangeFox descargado en /Descargas.
-- OVERLAY: APK de brillo descargado en /Descargas.
+- KIT DE BANCA: Magisk, PlayIntegrityFork y Shamiko verificados en /Descargas.
 - SCRIPT: `Instalar_GSI_RedmiNote11Pro.ps1` listo para ejecución.
 
 ================================================================================

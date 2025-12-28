@@ -2,11 +2,11 @@
 
 Para asegurar que tus aplicaciones de banca funcionen al 100%, sigue estos pasos definitivos. Si el script tiene problemas de descarga por bloqueos de red, usa estos enlaces directos:
 
-## 🔗 Enlaces de Descarga Directa (Manual)
-Si el script falla, descarga estos 3 archivos y ponlos en tu móvil:
-1.  **Magisk v28.1:** [Descargar APK](https://github.com/topjohnwu/Magisk/releases/download/v28.1/Magisk-v28.1.apk) (✅ Verificado)
-2.  **Play Integrity Fix:** [Descargar Módulo ZIP](https://www.google.com/search?q=PlayIntegrityFix+v19.1+github+releases) (Busca la versión v19.1 de chiteroman)
-3.  **Shamiko:** [Descargar Módulo ZIP](https://github.com/LSPosed/Shamiko/releases) (Usa la versión 1.2 o superior)
+## 📂 Archivos en tu carpeta Descargas/
+Ya he descargado estos archivos por ti para tu comodidad:
+1.  **Magisk-v28.1.apk**: El motor para root y ocultación.
+2.  **PlayIntegrityFork.zip**: La versión más estable mantenida por osm0sis para pasar la certificación.
+3.  **Shamiko.zip**: El módulo avanzado para esconder el root de apps estrictas.
 
 ## 🛡️ Configuración Crítica (No te saltes ningún paso)
 1.  **Zygisk:** Actívalo en los ajustes de Magisk y reinicia.
