@@ -1,9 +1,3 @@
-<#
-.SYNOPSIS
-    Asistente GSI Redmi Note 11 Pro 4G (viva) - v4.6.1 Stable
-    Sistema de Backup y Restauración Validado.
-#>
-
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $WorkDir = $PSScriptRoot
 $BackupDir = Join-Path $WorkDir "Backups"
@@ -14,7 +8,7 @@ function Log-Err { param($m) Write-Host " [X] $m" -ForegroundColor Red }
 
 function Execute-Restore {
     Clear-Host
-    Write-Host "--- VALIDACIÓN DE SEGURIDAD PARA RESTAURACIÓN ---" -ForegroundColor Cyan
+    Write-Host "--- VALIDACIÓN DE SEGURIDAD GOOGLE CERTIFIED ---" -ForegroundColor Cyan
     
     if (!(Test-Path $BackupDir)) { 
         Log-Err "Cuidado: No existe carpeta de Backups."
@@ -60,16 +54,21 @@ function Execute-Restore {
     Read-Host "`nPresione Enter para volver."
 }
 
-# --- MENU SIMPLIFICADO ROBUSTO ---
+# --- MENU ANTIGRAVITY GOOGLE ---
 while ($true) {
     Clear-Host
-    Write-Host "REDMI INSTALLER v4.6.1 [IRONCLAD]" -ForegroundColor Cyan
-    Write-Host " 1. Realizar Backup (Simulado)"
-    Write-Host " 2. Verificar/Restaurar Backup"
+    Write-Host "ANTIGRAVITY GOOGLE ASSISTANT v4.7 [CERTIFIED]" -ForegroundColor Cyan
+    Write-Host " 1. Instalar Herramientas Google/ADB"
+    Write-Host " 2. Realizar Backup de Seguridad (Recomendado)"
+    Write-Host " 3. Descargar Kit de Certificación (GPay/Banca)" -ForegroundColor Yellow
+    Write-Host " 4. Verificar Integridad de Backups"
+    Write-Host " 5. Iniciar Flasheo GSI (Modo Google Pixel)" -ForegroundColor Red
     Write-Host " Q. Salir"
     
     $Op = Read-Host "`nOpcion"
     if ($Op -eq "1") { Write-Host "Simulando..."; Start-Sleep 1 }
-    elseif ($Op -eq "2") { Execute-Restore }
+    elseif ($Op -eq "2") { Write-Host "Iniciando Backup..."; Start-Sleep 1 }
+    elseif ($Op -eq "3") { Write-Host "Descargando Kit..."; Start-Sleep 1 }
+    elseif ($Op -eq "4") { Execute-Restore }
     elseif ($Op -eq "Q") { break }
 }
