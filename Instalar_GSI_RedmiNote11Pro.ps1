@@ -1,11 +1,16 @@
 <#
 .SYNOPSIS
-    Script de Automatización para Instalación de ROM GSI en Redmi Note 11 Pro 4G (viva).
-    Versión con MODO SIMULACIÓN integrado.
+    Script de Automatización Integrada para Redmi Note 11 Pro 4G (viva).
+    Versión: 2.0 - Con BACKUP Y RESTAURACIÓN (Anti-Brick).
 
 .DESCRIPTION
-    Automatiza y simula el flasheo de GSI.
-    Incluye un modo 'Demo' para verificar el flujo sin dispositivo conectado.
+    Este script permite:
+    1. Instalar GSI (LineageOS, etc.)
+    2. REALIZAR BACKUP de particiones críticas (Boot, Vbmeta, NVRAM/IMEI).
+    3. RESTAURAR el dispositivo en caso de fallo.
+    4. Simular todo el proceso (Modo Demo).
+    
+    HERRAMIENTAS: Utiliza 'mtkclient' para backups profundos (Modo Brom).
 #>
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -13,163 +18,196 @@
 # Configuracion
 $WorkDir = $PSScriptRoot
 $ToolsDir = "$WorkDir\Herramientas"
+$BackupDir = "$WorkDir\Backups"
 $DownloadsDir = "$WorkDir\Descargas"
 $RomsDir = "$WorkDir\ROMs"
-$SimulationMode = $false # Por defecto desactivado
+$SimulationMode = $false 
 
 # URLs
 $UrlPlatformTools = "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
-$UrlMtkClient = "https://github.com/bkerler/mtkclient/archive/refs/heads/main.zip"
-$UrlLineageOS = "https://github.com/xiaomi-mt6781-devs/releases/releases"
-$UrlOverlay = "https://github.com/phhusson/treble_experimentations/raw/master/overlays/treble-overlay-xiaomi-viva.apk"
+# mtkclient se gestiona por pip o git clone si falla pip
 
 # Crear estructura
 mkdir $ToolsDir -Force | Out-Null
+mkdir $BackupDir -Force | Out-Null
 mkdir $DownloadsDir -Force | Out-Null
 mkdir $RomsDir -Force | Out-Null
 
-function Run-Fastboot {
-    param([string]$Arguments)
+function Run-Command {
+    param([string]$Cmd, [string]$Args, [string]$Desc)
     
     if ($SimulationMode) {
-        Write-Host "[SIMULACIÓN] Ejecutando: fastboot $Arguments" -ForegroundColor Magenta
-        Start-Sleep -Seconds 2 # Simular tiempo de proceso
-        return "SIMULADO_OK"
+        Write-Host "[SIMULACIÓN] $Desc" -ForegroundColor Magenta
+        Write-Host "  -> Ejecutando: $Cmd $Args" -ForegroundColor DarkGray
+        Start-Sleep -Seconds 2
+        return $true
     }
     else {
-        # Ejecutar comando real
-        Start-Process "fastboot" -ArgumentList $Arguments -NoNewWindow -Wait
+        Write-Host "[REAL] $Desc" -ForegroundColor Cyan
+        Start-Process $Cmd -ArgumentList $Args -NoNewWindow -Wait
     }
 }
 
 function Imprimir-Encabezado {
     Clear-Host
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "   AUTOMATIZADOR DE GSI PARA REDMI NOTE 11 PRO 4G (VIVA)       " -ForegroundColor Yellow
+    Write-Host "   GESTOR INTEGRAL GSI - REDMI NOTE 11 PRO 4G (VIVA)           " -ForegroundColor Yellow
     if ($SimulationMode) {
-        Write-Host "                  *** MODO SIMULACIÓN ACTIVO ***                " -ForegroundColor Magenta
+        Write-Host "             *** MODO SIMULACIÓN ACTIVO ***                     " -ForegroundColor Magenta
     }
     Write-Host "================================================================" -ForegroundColor Cyan
     Write-Host ""
 }
 
-function Descargar-Herramientas {
-    Write-Host "[*] Iniciando descarga de herramientas..." -ForegroundColor Green
-    if ($SimulationMode) {
-        Write-Host "[SIMULACIÓN] Descargando Platform Tools desde $UrlPlatformTools..." -ForegroundColor Magenta
-        Start-Sleep -Seconds 1
-        Write-Host "[SIMULACIÓN] Extrayendo archivos..." -ForegroundColor Magenta
-        Start-Sleep -Seconds 1
-        Write-Host "[OK] Herramientas simuladas listas." -ForegroundColor Green
-        return
-    }
+function Instalar-Dependencias {
+    Write-Host "[*] Verificando dependencias..."
+    if ($SimulationMode) { Write-Host "[SIM] Dependencias instaladas." -ForegroundColor Green; return }
 
-    # Lógica real de descarga
-    $AdbZip = "$DownloadsDir\platform-tools.zip"
+    # Descargar Platform Tools
     if (-not (Test-Path "$ToolsDir\platform-tools\fastboot.exe")) {
-        Invoke-WebRequest -Uri $UrlPlatformTools -OutFile $AdbZip
-        Expand-Archive -Path $AdbZip -DestinationPath $ToolsDir -Force
+        Write-Host "  - Descargando Platform Tools..."
+        try {
+            Invoke-WebRequest -Uri $UrlPlatformTools -OutFile "$DownloadsDir\pt.zip"
+            Expand-Archive "$DownloadsDir\pt.zip" -DestinationPath $ToolsDir -Force
+        }
+        catch {
+            Write-Host "  ! Error descargando ADB. Verifica tu internet." -ForegroundColor Red
+        }
     }
     $env:Path += ";$ToolsDir\platform-tools"
-    Write-Host "[OK] Herramientas preparadas." -ForegroundColor Green
+
+    # mtkclient requiere Python + Librerías
+    Write-Host "  - Para Backups se requiere Python y mtkclient instalado."
+    Write-Host "    Intentando instalar via PIP..."
+    try {
+        pip install mtkclient
+    }
+    catch {
+        Write-Host "  ! No se pudo instalar mtkclient. Asegúrate de tener Python instalado y en el PATH." -ForegroundColor Red
+    }
+}
+
+function Realizar-Backup {
+    Imprimir-Encabezado
+    Write-Host "COPIA DE SEGURIDAD (BACKUP)" -ForegroundColor Yellow
+    Write-Host "------------------------------------------------"
+    Write-Host "Este proceso guardará tus particiones vitales (NVRAM, Boot, Vbmeta)."
+    Write-Host "NECESARIO: Apaga el móvil. Mantén presionado Vol+ y Vol- mientras conectas el USB (Modo BROM)."
+    Write-Host ""
+    
+    if (-not $SimulationMode) {
+        Read-Host "Presiona Enter cuando estés listo para conectar el cable..."
+    }
+
+    $Fecha = Get-Date -Format "yyyyMMdd_HHmm"
+    $CarpetaBackup = "$BackupDir\$Fecha"
+    mkdir $CarpetaBackup -Force | Out-Null
+
+    # Backup de Particiones Críticas (NVRAM es VITAL para IMEI)
+    # Nota: El comando real de mtkclient se llama 'mtk' una vez instalado via pip, o 'python mtk.py' si es source.
+    # Asumimos instalación por pip para simplificar.
+    Run-Command "mtk" "r boot,vbmeta,dtbo,nvram,protect1,protect2,seccfg `"$CarpetaBackup\boot.img`",`"$CarpetaBackup\vbmeta.img`",`"$CarpetaBackup\dtbo.img`",`"$CarpetaBackup\nvram.bin`",`"$CarpetaBackup\protect1.bin`",`"$CarpetaBackup\protect2.bin`",`"$CarpetaBackup\seccfg.bin`"" "Leyendo particiones críticas..."
+
+    Write-Host "`n[INFO] Backup guardado en: $CarpetaBackup" -ForegroundColor Green
+    Read-Host "Presiona Enter para continuar"
+}
+
+function Restaurar-Sistema {
+    Imprimir-Encabezado
+    Write-Host "RESTAURACIÓN DE EMERGENCIA" -ForegroundColor Red
+    Write-Host "------------------------------------------------"
+    Write-Host "Esto restaurará las particiones desde una copia de seguridad."
+    
+    $Backups = Get-ChildItem $BackupDir
+    if ($Backups.Count -eq 0) {
+        Write-Host "No hay backups disponibles." -ForegroundColor Red; Start-Sleep 2; return
+    }
+
+    Write-Host "Selecciona backup a restaurar:"
+    $i = 1; foreach ($b in $Backups) { Write-Host "[$i] $($b.Name)"; $i++ }
+    $sel = 1
+    if (-not $SimulationMode) { $sel = Read-Host "Opción" }
+    
+    if ($sel -le 0 -or $sel -gt $Backups.Count) { return }
+    $TargetDir = $Backups[$sel - 1].FullName
+    Write-Host "Restaurando desde: $TargetDir"
+
+    # Restauración via mtkclient
+    # ¡CUIDADO! nvram.bin contiene tus IMEIs.
+    Run-Command "mtk" "w boot,vbmeta,dtbo,nvram,protect1,protect2,seccfg `"$TargetDir\boot.img`",`"$TargetDir\vbmeta.img`",`"$TargetDir\dtbo.img`",`"$TargetDir\nvram.bin`",`"$TargetDir\protect1.bin`",`"$TargetDir\protect2.bin`",`"$TargetDir\seccfg.bin`"" "Escribiendo particiones..."
+
+    Write-Host "`n[OK] Sistema restaurado." -ForegroundColor Green
+    Read-Host "Presiona Enter"
 }
 
 function Flashear-GSI {
     Imprimir-Encabezado
-    Write-Host "INSTRUCCIONES DE FLASHEO DE GSI" -ForegroundColor Yellow
-    Write-Host "------------------------------------------------"
-    Write-Host "Este proceso borrará TODOS tus datos. (Simulado: NO borrará nada)"
+    Write-Host "INSTALACIÓN DE ROM GSI" -ForegroundColor Yellow
     
-    # En simulación no pedimos vbmeta real, usamos nombres ficticios si no existen
+    # Oferta de Backup previo
     if (-not $SimulationMode) {
-        $Confirmation = Read-Host "¿Deseas continuar? (S/N)"
-        if ($Confirmation -ne 'S') { return }
+        $HacerBackup = Read-Host "¿Quieres hacer un BACKUP de seguridad antes? (Recomendado) [S/N]"
+        if ($HacerBackup -eq 'S') { Realizar-Backup }
     }
     else {
-        Write-Host "[SIMULACIÓN] Auto-confirmando inicio de proceso..." -ForegroundColor Magenta
-        Start-Sleep -Seconds 1
+        Write-Host "[SIMULACIÓN] Saltando backup previo por modo demo..."
     }
 
-    # Verificar dispositivo
-    Write-Host "[*] Comprobando dispositivo..."
-    if ($SimulationMode) {
-        Write-Host "[SIMULACIÓN] Dispositivo 'Redmi Note 11 Pro' detectado (ID: VIVA123456)" -ForegroundColor Magenta
-    }
-    else {
-        $Device = fastboot devices
-        if (-not $Device) {
-            Write-Host "  ! Dispositivo no detectado en modo FASTBOOT." -ForegroundColor Red
-            return
-        }
-    }
-
-    # Selección de imagen
-    $SystemImg = "lineage-20.0-20231228-UNOFFICIAL-arm64_bgN.img"
-    if (-not $SimulationMode) {
-        # Lógica real de selección de archivo
-        $GsiFiles = Get-ChildItem "$RomsDir\*.img"
-        if ($GsiFiles.Count -eq 0) { 
-            Write-Host "  ! No se encontraron archivos .img en $RomsDir" -ForegroundColor Red
-            return
-        }
-        $SystemImg = $GsiFiles[0].FullName
+    # Proceso de Flasheo (Vbmeta -> Fastbootd -> System)
+    Run-Command "fastboot" "devices" "Buscando dispositivo..."
+    
+    # 1. Vbmeta
+    if (Test-Path "$WorkDir\vbmeta.img") {
+        Run-Command "fastboot" "--disable-verity --disable-verification flash vbmeta vbmeta.img" "Parcheando vbmeta..."
     }
     else {
-        Write-Host "[SIMULACIÓN] Usando imagen de ejemplo: $SystemImg" -ForegroundColor Magenta
+        if (-not $SimulationMode) { Write-Host "Falta vbmeta.img!" -ForegroundColor Red; Read-Host; return }
     }
 
-    # Paso 1: Vbmeta
-    Write-Host "`n[PASO 1] Deshabilitando Verificación (Vbmeta)..." -ForegroundColor Cyan
-    Run-Fastboot "--disable-verity --disable-verification flash vbmeta vbmeta.img"
+    # 2. Reboot FastbootD
+    Run-Command "fastboot" "reboot fastboot" "Entrando a FastbootD..."
+    
+    # 3. Limpieza
+    Run-Command "fastboot" "delete-logical-partition product_a" "Borrando partición Product..."
 
-    # Paso 2: FastbootD
-    Write-Host "`n[PASO 2] Reiniciando a FastbootD..." -ForegroundColor Cyan
-    Run-Fastboot "reboot fastboot"
-    Write-Host "  Esperando a que el dispositivo entre en modo FastbootD..."
-    Start-Sleep -Seconds 3
-
-    # Paso 3: Borrar Product
-    Write-Host "`n[PASO 3] Liberando espacio en Super Partition..." -ForegroundColor Cyan
-    Run-Fastboot "delete-logical-partition product_a"
-
-    # Paso 4: Flashear Sistema
-    Write-Host "`n[PASO 4] Flasheando Sistema (Esto tardaría unos 5-10 mins)..." -ForegroundColor Cyan
-    for ($i = 0; $i -le 100; $i += 20) {
-        Write-Host "  [SIMULACIÓN] Flasheando... $i%"
-        Start-Sleep -Milliseconds 500
+    # 4. Flash System
+    $GsiImg = "lineage.img" # Simplificado para el ejemplo
+    if (-not $SimulationMode) { 
+        $Files = Get-ChildItem "$RomsDir\*.img"; if ($Files) { $GsiImg = $Files[0].FullName } 
     }
-    Run-Fastboot "flash system $SystemImg"
+    Run-Command "fastboot" "flash system `"$GsiImg`"" "Flasheando System ($GsiImg)..."
 
-    # Paso 5: Wipe
-    Write-Host "`n[PASO 5] Formateando Datos de Usuario..." -ForegroundColor Cyan
-    Run-Fastboot "-w"
+    # 5. Wipe
+    Run-Command "fastboot" "-w" "Formateando datos de usuario..."
+    Run-Command "fastboot" "reboot" "Reiniciando sistema..."
 
-    Write-Host "`n[FIN] Proceso completado exitosamente." -ForegroundColor Green
-    Read-Host "Presiona Enter para volver."
+    Read-Host "Proceso finalizado. Enter para salir."
 }
 
 # Menú Principal
 do {
-    $SimulationMode = $false # Resetear modo por defecto en cada vuelta
+    $SimulationMode = $false
     Imprimir-Encabezado
-    Write-Host "1. Descargar Herramientas"
-    Write-Host "2. Flashear GSI (REAL - Requiere móvil)"
-    Write-Host "3. Simular Todo el Proceso (Modo Demo)"
-    Write-Host "4. Salir"
+    Write-Host "1. Instalar Dependencias (Python/MtkClient/Drivers)"
+    Write-Host "2. REALIZAR BACKUP (Anti-Brick)"
+    Write-Host "3. Instalar GSI (Flasheo)"
+    Write-Host "4. RESTAURAR desde Backup"
+    Write-Host "5. SIMULACIÓN / DEMO (Recorrido completo)"
+    Write-Host "6. Salir"
     Write-Host ""
-    $Opcion = Read-Host "Elige una opción"
+    $Op = Read-Host "Opción"
 
-    switch ($Opcion) {
-        '1' { Descargar-Herramientas }
-        '2' { Flashear-GSI }
-        '3' { 
-            $SimulationMode = $true
-            # Crear ficheros dummy para que la simulación no falle chequeos básicos de directorios
-            if (-not (Test-Path "$RomsDir")) { mkdir $RomsDir }
-            New-Item -ItemType File -Force -Path "$RomsDir\dummy_rom.img" | Out-Null
-            Descargar-Herramientas
+    switch ($Op) {
+        '1' { Instalar-Dependencias }
+        '2' { Realizar-Backup }
+        '3' { Flashear-GSI }
+        '4' { Restaurar-Sistema }
+        '5' { 
+            $SimulationMode = $true; 
+            if (-not (Test-Path "$RomsDir\dummy.img")) { New-Item -Force "$RomsDir\dummy.img" | Out-Null }
+            Realizar-Backup; 
             Flashear-GSI 
-        }
-        '4' { exit }
+        } 
+        '6' { exit }
     }
-} while ($Opcion -ne '4')
+} while ($Op -ne '6')
