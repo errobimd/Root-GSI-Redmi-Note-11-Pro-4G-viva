@@ -1,56 +1,46 @@
-# MANUAL DE OPERACIÓN: Security & Banking Edition (v4.5)
-**Solución para Apps de Banca y Certificación Google en Redmi Note 11 Pro 4G**
+# MANUAL DE OPERACIÓN: Ironclad Edition (v4.6)
+**Seguridad Extrema en Flasheo y Banca para Redmi Note 11 Pro 4G**
 
 ---
 
 ## 📋 Introducción
-Las aplicaciones de bancos (BBVA, Santander, Bancopel, etc.) detectan si el teléfono tiene el bootloader desbloqueado o una ROM GSI. Este kit incluye las herramientas necesarias para ocultar estas modificaciones y permitir el uso normal de tus aplicaciones financieras.
+Este manual detalla el uso del asistente v4.6, diseñado para ser el método más seguro de instalación de GSI. Incluye protección contra "bricks" y un kit completo para aplicaciones financieras.
 
 ---
 
-## 🏦 Cómo hacer que funcionen tus Apps de Banca (5 Pasos)
-
-### **Paso 1: Descargar el Kit de Seguridad**
-En el script principal (`v4.5`), usa la **Opción 2: PREPARAR APPS DE BANCA**. Esto descargará en tu carpeta `Descargas/`:
-*   `Magisk.apk`
-*   `PlayIntegrityFork.zip` (o similar)
-*   `Shamiko.zip`
-
-### **Paso 2: Instalación de Magisk**
-Una vez tengas la ROM GSI funcionando:
-1.  Pasa el archivo `Magisk.apk` a tu teléfono e instálalo.
-2.  Abre Magisk, ve a ⚙️ (Ajustes) y activa la opción **Zygisk**.
-3.  Reinicia el teléfono.
-
-### **Paso 3: Instalar Módulos**
-1.  En Magisk, ve a la pestaña **Módulos**.
-2.  Pulsa "Instalar desde almacenamiento" y elige `PlayIntegrityFork.zip`.
-3.  Repite el proceso para `Shamiko.zip`.
-4.  Reinicia el teléfono.
-
-### **Paso 4: Ocultar Magisk (DenyList)**
-1.  Abre Magisk > ⚙️ Ajustes > **Configurar DenyList**.
-2.  Pulsa los 3 puntos (arriba a la derecha) y marca "Mostrar apps de sistema".
-3.  Busca y marca todas las casillas de:
-    *   **Google Play Services** (especialmente `com.google.android.gms.unstable`).
-    *   **Google Play Store**.
-    *   **Tus aplicaciones de banco**.
-4.  **⚠️ IMPORTANTE:** Asegúrate de que "Enforce DenyList" (Forzar DenyList) esté **APAGADO** si vas a usar Shamiko (Shamiko lo gestiona mejor).
-
-### **Paso 5: Limpieza de Datos**
-Ajustes del sistema > Aplicaciones > Ver todas:
-1.  Busca **Google Play Store** -> Almacenamiento -> **Borrar Datos**.
-2.  Busca **Google Play Services** -> Almacenamiento -> **Borrar Datos**.
-3.  Reinicia por última vez.
+## 🛡️ Seguridad Anti-Brick (Nuevo en v4.6)
+El script ahora incluye un sistema de auditoría de backups:
+1.  **Validación de Archivos**: Antes de restaurar, el script verifica que los archivos `.img` no estén vacíos. Si un backup falló durante la creación, el sistema bloqueará la restauración para evitar dañar el móvil.
+2.  **Particiones Críticas**: El sistema resguarda `nvram` (IMEI), `boot` (Arranque) y `vbmeta` (Seguridad).
+3.  **Consejo**: Realiza un backup (Opción 2) inmediatamente antes de cualquier flasheo.
 
 ---
 
-## ✅ Verificación
-Descarga la app **"YASNAC"** o **"Play Integrity API Checker"** de la Play Store. Deberías obtener un "PASS" en:
-*   `Basic Integrity`
-*   `Device Integrity`
+## 🏦 Cómo hacer que funcionen tus Apps de Banca
+(Pasos simplificados para v4.6)
 
-Si ambos están en verde, tus apps de banco funcionarán perfectamente.
+### **Paso 1: Preparación**
+Usa la opción de **Kit de Banca** en el script para tener `Magisk.apk`, `PlayIntegrityFork.zip` y `Shamiko.zip` listos en tu carpeta `Descargas/`.
+
+### **Paso 2: Instalación y Zygisk**
+1. Instala `Magisk.apk`.
+2. En Ajustes de Magisk, activa **Zygisk** y reinicia.
+
+### **Paso 3: Módulos de Integridad**
+1. Instala en este orden: `PlayIntegrityFork.zip` y luego `Shamiko.zip`.
+2. Reinicia.
+
+### **Paso 4: Configuración de Ocultación**
+1. En Ajustes de Magisk -> **Configurar DenyList**, marca los bancos y los Servicios de Google.
+2. **IMPORTANTE**: Mantén "Enforce DenyList" **DESACTIVADO** (Shamiko se encarga de esto de forma más inteligente).
+
+### **Paso 5: Limpieza Final**
+Borra datos de Google Play Store y Servicios de Google Play, y reinicia.
 
 ---
-**Desarrollado por Antigravity AI - v4.5 Security Edition**
+
+## ✅ Verificación final
+Usa "Play Integrity API Checker". Si obtienes verde en `Basic` y `Device`, tus bancos funcionarán al 100%.
+
+---
+**Desarrollado por Antigravity AI - v4.6 Ironclad Guard**
