@@ -7,10 +7,10 @@ $d_LogFile = Join-Path $d_WorkDir "antigravity_session.log"
 # Estado del sistema - Tracking de pasos completados
 $global:StepsCompleted = @{
     "Step1_Environment" = $false
-    "Step2_Backup" = $false
-    "Step3_BankingKit" = $false
-    "Step4_Flash" = $false
-    "Step5_Audit" = $false
+    "Step2_Backup"      = $false
+    "Step3_BankingKit"  = $false
+    "Step4_Flash"       = $false
+    "Step5_Audit"       = $false
 }
 
 $global:ExpertMode = $false
@@ -68,12 +68,14 @@ function Check-DeviceBattery {
             }
             LogOk "Nivel de bateria aceptable: $batteryInt%"
             return $true
-        } else {
+        }
+        else {
             LogWarn "No se pudo leer el nivel de bateria"
             $manual = Read-Host "Confirma manualmente que la bateria esta al $MinBattery% o mas (S/N)"
             return ($manual -eq "S")
         }
-    } catch {
+    }
+    catch {
         LogWarn "Error al verificar bateria: $($_.Exception.Message)"
         $manual = Read-Host "Confirma manualmente que la bateria esta al $MinBattery% o mas (S/N)"
         return ($manual -eq "S")
@@ -83,11 +85,11 @@ function Check-DeviceBattery {
 function Show-Progress {
     Write-Host "`nPROGRESO DEL PROCESO:" -ForegroundColor Cyan
     $steps = @(
-        @{Name="1. Verificacion Entorno"; Key="Step1_Environment"},
-        @{Name="2. Backup Seguridad"; Key="Step2_Backup"},
-        @{Name="3. Kit Banca"; Key="Step3_BankingKit"},
-        @{Name="4. Flasheo GSI"; Key="Step4_Flash"},
-        @{Name="5. Auditoria Final"; Key="Step5_Audit"}
+        @{Name = "1. Verificacion Entorno"; Key = "Step1_Environment" },
+        @{Name = "2. Backup Seguridad"; Key = "Step2_Backup" },
+        @{Name = "3. Kit Banca"; Key = "Step3_BankingKit" },
+        @{Name = "4. Flasheo GSI"; Key = "Step4_Flash" },
+        @{Name = "5. Auditoria Final"; Key = "Step5_Audit" }
     )
     
     foreach ($step in $steps) {
@@ -162,6 +164,10 @@ function RunPrep {
     Write-Host "- Valida que Python este disponible para herramientas MTK" -ForegroundColor Gray
     Write-Host "- Verifica espacio en disco disponible" -ForegroundColor Gray
     Write-Host ""
+    Write-Host "COMANDOS TECNICOS:" -ForegroundColor Yellow
+    Write-Host "  > Test-Path .\Herramientas\platform-tools\adb.exe" -ForegroundColor Cyan
+    Write-Host "  > Get-PSDrive (verificacion de espacio)" -ForegroundColor Cyan
+    Write-Host ""
     Write-Host "TIEMPO ESTIMADO: 30 segundos" -ForegroundColor DarkGray
     Write-Host ""
     Read-Host "Presiona Enter para iniciar la verificacion"
@@ -174,7 +180,8 @@ function RunPrep {
     if (Test-Path "$d_WorkDir\Herramientas\platform-tools\adb.exe") { 
         LogOk "ADB encontrado y listo para usar" 
         LogOk "Fastboot disponible para flasheo"
-    } else { 
+    }
+    else { 
         LogErr "Faltan herramientas ADB/Fastboot" 
         LogWarn "Necesitas descargarlas antes de continuar"
         $allOk = $false
@@ -182,7 +189,8 @@ function RunPrep {
     
     if (Check-DiskSpace) {
         # Espacio OK
-    } else {
+    }
+    else {
         $allOk = $false
     }
     
@@ -210,6 +218,10 @@ function RunBackup {
     Write-Host "- Crea una copia de seguridad de tu IMEI (nvram)" -ForegroundColor Gray
     Write-Host "- Guarda el arranque original (boot.img)" -ForegroundColor Gray
     Write-Host "- Respalda la verificacion de arranque (vbmeta)" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "COMANDOS TECNICOS:" -ForegroundColor Yellow
+    Write-Host "  > python mtk r nvram,boot,vbmeta .\Backups\[fecha]" -ForegroundColor Cyan
+    Write-Host "  (En modo simulacion: crea archivos de prueba)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "POR QUE ES IMPORTANTE:" -ForegroundColor Yellow
     Write-Host "Si algo sale mal durante el flasheo, podras restaurar" -ForegroundColor Gray
@@ -257,6 +269,11 @@ function RunGPayKit {
     Write-Host "- Comprueba Play Integrity Fix (para pasar certificacion)" -ForegroundColor Gray
     Write-Host "- Valida Shamiko (para ocultar root de apps bancarias)" -ForegroundColor Gray
     Write-Host ""
+    Write-Host "COMANDOS TECNICOS:" -ForegroundColor Yellow
+    Write-Host "  > Test-Path .\Descargas\Magisk.apk" -ForegroundColor Cyan
+    Write-Host "  > Test-Path .\Descargas\Shamiko.zip" -ForegroundColor Cyan
+    Write-Host "  > Test-Path .\Descargas\PlayIntegrityFork.zip" -ForegroundColor Cyan
+    Write-Host ""
     Write-Host "PARA QUE SIRVE:" -ForegroundColor Yellow
     Write-Host "Estos modulos permiten que Google Pay y tus apps de banca" -ForegroundColor Gray
     Write-Host "funcionen correctamente en tu ROM personalizada" -ForegroundColor Gray
@@ -273,7 +290,8 @@ function RunGPayKit {
     foreach ($f in $files) {
         if (Test-Path "$d_DownloadsDir\$f") { 
             LogOk "$f encontrado y listo" 
-        } else { 
+        }
+        else { 
             LogWarn "$f no encontrado (necesario descargar)" 
             $allFound = $false
         }
@@ -304,6 +322,14 @@ function RunFlashGSI {
     Write-Host "- Instala el nuevo sistema Android (GSI)" -ForegroundColor Gray
     Write-Host "- Configura las particiones para el arranque" -ForegroundColor Gray
     Write-Host ""
+    Write-Host "COMANDOS TECNICOS:" -ForegroundColor Yellow
+    Write-Host "  > adb reboot fastboot" -ForegroundColor Cyan
+    Write-Host "  > fastboot reboot fastboot (entrar en FastbootD)" -ForegroundColor Cyan
+    Write-Host "  > fastboot erase userdata" -ForegroundColor Cyan
+    Write-Host "  > fastboot flash system .\ROMs\system.img" -ForegroundColor Cyan
+    Write-Host "  > fastboot -w (wipe data)" -ForegroundColor Cyan
+    Write-Host "  > fastboot reboot" -ForegroundColor Cyan
+    Write-Host ""
     Write-Host "REQUISITOS PREVIOS:" -ForegroundColor Yellow
     $check1 = if ($global:StepsCompleted["Step2_Backup"]) { "[V]" } else { "[X]" }
     Write-Host "$check1 Backup realizado (Paso 2)" -ForegroundColor $(if ($global:StepsCompleted["Step2_Backup"]) { "Green" } else { "Red" })
@@ -333,7 +359,8 @@ function RunFlashGSI {
         Write-Host "SIGUIENTE PASO RECOMENDADO:" -ForegroundColor Yellow
         Write-Host "Opcion 5 - Certificar salud del sistema" -ForegroundColor Green
         Write-Host "Esto validara que todo se instalo correctamente" -ForegroundColor Gray
-    } else {
+    }
+    else {
         LogErr "Operacion cancelada - Texto de confirmacion incorrecto"
     }
     Read-Host "`nPresiona Enter para volver al menu"
@@ -345,7 +372,8 @@ function RunHealthCheck {
     if (Test-Path "$d_WorkDir\certificador_salud.ps1") {
         powershell -ExecutionPolicy Bypass -File "$d_WorkDir\certificador_salud.ps1"
         $global:StepsCompleted["Step5_Audit"] = $true
-    } else {
+    }
+    else {
         LogErr "No se encuentra el script certificador."
     }
     Read-Host "`nEnter para volver"
@@ -375,7 +403,8 @@ function Show-EmergencyRecovery {
         foreach ($b in $backups) {
             Write-Host "  - $($b.Name)" -ForegroundColor Green
         }
-    } else {
+    }
+    else {
         Write-Host "  No hay backups disponibles" -ForegroundColor Red
     }
     Write-Host ""
@@ -394,7 +423,8 @@ function Toggle-ExpertMode {
     if ($global:ExpertMode) {
         Write-Host "ADVERTENCIA: En modo experto puedes saltar pasos" -ForegroundColor Yellow
         Write-Host "Esto puede ser PELIGROSO si no sabes lo que haces" -ForegroundColor Red
-    } else {
+    }
+    else {
         Write-Host "Modo guiado activado - Maximo seguridad" -ForegroundColor Green
     }
     Write-Host ""
@@ -407,7 +437,7 @@ Add-Log "=== NUEVA SESION INICIADA ==="
 while ($true) {
     Clear-Host
     $modeIndicator = if ($global:ExpertMode) { "[MODO EXPERTO]" } else { "[MODO GUIADO]" }
-    Write-Host "ANTIGRAVITY GOOGLE ASSISTANT v5.4 [ULTIMATE SAFETY] $modeIndicator" -ForegroundColor Cyan
+    Write-Host "ANTIGRAVITY GOOGLE ASSISTANT v5.4.1 [TECHNICAL TRANSPARENCY] $modeIndicator" -ForegroundColor Cyan
     Write-Host "========================================================" -ForegroundColor Cyan
     
     Show-Progress
