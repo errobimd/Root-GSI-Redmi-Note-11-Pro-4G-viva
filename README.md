@@ -1,5 +1,5 @@
-# ANTIGRAVITY GOOGLE ASSISTANT v5.4 (Redmi Note 11 Pro 4G)
-**Ultimate Safety Edition - Automatización de Élite para GSI**
+# ANTIGRAVITY GOOGLE ASSISTANT v5.4.2 (Redmi Note 11 Pro 4G)
+**Technical Transparency Edition - Automatización de Élite para GSI**
 
 Este repositorio es el centro de control definitivo para transformar tu terminal MediaTek en una experiencia Google pura y certificada. Diseñado bajo estándares de seguridad forense para el chipset Helio G96.
 
@@ -9,7 +9,13 @@ A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
 2.  **Seguridad Anti-Brick:** Sistema de validación de integridad de backups que bloquea restauraciones corruptas.
 3.  **Flujo Optimizado:** Menú estructurado por pasos lógicos (Preparación -> Backup -> Flasheo -> Auditoría).
 
-## ✨ Novedades v5.4 - Ultimate Safety Edition
+## ✨ Novedades v5.4.2 - Technical Transparency Edition
+
+### 🔍 Transparencia Técnica (NUEVO)
+- **Comandos visibles**: Cada paso muestra los comandos técnicos exactos que se ejecutarían
+- **Modo claramente indicado**: Distinción visual entre SIMULACIÓN y OPERACIÓN REAL
+- **Educativo**: Aprende exactamente qué comandos usar para operaciones reales
+- **Verificable**: Los usuarios avanzados pueden revisar los comandos antes de ejecutar
 
 ### 🎯 Sistema de Progreso Visual
 - Indicador en tiempo real de qué pasos has completado
@@ -43,6 +49,35 @@ A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
 - Lista de backups disponibles para restauración
 - Instrucciones claras para usar mtkclient
 
+## 📚 Modo de Operación: Demostración/Simulación
+
+**IMPORTANTE**: Este script opera en modo **DEMOSTRACIÓN/SIMULACIÓN** por defecto:
+
+- ✅ **Paso 1 (Verificación)**: Operación REAL - Verifica archivos y espacio en disco
+- 🔵 **Paso 2 (Backup)**: SIMULACIÓN - Crea archivos de prueba, no conecta al dispositivo
+- ✅ **Paso 3 (Kit Banca)**: Operación REAL - Verifica archivos en carpeta Descargas
+- 🔵 **Paso 4 (Flasheo)**: SIMULACIÓN - Muestra comandos pero no flashea
+- ✅ **Paso 5 (Auditoría)**: Operación REAL - Ejecuta script de certificación
+
+### 🛠️ Para Operaciones Reales:
+
+El script muestra los comandos técnicos exactos que necesitas ejecutar:
+
+**Backup Real:**
+```bash
+python mtk r nvram,boot,vbmeta .\Backups\[fecha]
+```
+
+**Flasheo Real:**
+```bash
+adb reboot fastboot
+fastboot reboot fastboot
+fastboot erase userdata
+fastboot flash system .\ROMs\system.img
+fastboot -w
+fastboot reboot
+```
+
 ## 🛠️ Funcionalidades Maestras
 *   **Safe Operations (v5.4):** Guía de seguridad física integrada (checklist de carga, cables y conexiones).
 *   **Kernel BPF Fix:** Parcheo automático del kernel (boot.img) para restaurar Internet en Android 14/15.
@@ -50,7 +85,7 @@ A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
 *   **Kit de Banca:** Todo lo necesario para Magisk, Shamiko y Play Integrity Fix pre-configurado.
 
 ## 📂 Estructura del Ecosistema
-*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.4**. El motor de todo el proceso.
+*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.4.2**. El motor de todo el proceso.
 *   `GOOGLE_EXPERIENCE.md`: Guía definitiva para pagos NFC y registro Google Service Framework.
 *   `MANUAL_DE_USO.md`: Instrucciones paso a paso con "Reglas de Oro" de seguridad.
 *   `certificador_salud.ps1`: Utilidad de auditoría técnica.
@@ -81,9 +116,12 @@ El proyecto incluye un sistema de **Auditoría Forense** que valida:
 ## ⚠️ Disclaimer
 El flasheo es un proceso de riesgo. Este asistente minimiza el error humano mediante validaciones automáticas, pero la responsabilidad final recae en el operador. **Sigue siempre las Reglas de Oro detalladas en el manual.**
 
-## 📝 Changelog v5.4
+## 📝 Changelog v5.4.2
 
 ### Añadido
+- **Transparencia Técnica**: Comandos visibles en cada paso
+- **Indicadores de Modo**: Distinción clara entre SIMULACIÓN y OPERACIÓN REAL
+- **Nota en Menú Principal**: Advertencia sobre modo demostración
 - Sistema de progreso visual con tracking de pasos completados
 - Validación automática de prerequisitos antes de cada paso
 - Sistema de logs persistente (`antigravity_session.log`)
@@ -91,13 +129,13 @@ El flasheo es un proceso de riesgo. Este asistente minimiza el error humano medi
 - Verificación automática de batería del dispositivo vía ADB
 - Modo Experto vs Modo Guiado
 - Opción de Recuperación de Emergencia
-- Indicador visual del modo actual en el título
 
 ### Mejorado
 - Descripciones más detalladas en cada paso
 - Mejor feedback visual con colores contextuales
 - Mensajes de error más claros y accionables
 - Confirmaciones explícitas antes de operaciones destructivas
+- **Claridad sobre simulación vs operaciones reales**
 
 ### Seguridad
 - Bloqueo automático de flasheo sin backup previo
@@ -106,4 +144,4 @@ El flasheo es un proceso de riesgo. Este asistente minimiza el error humano medi
 - Log completo de todas las operaciones para auditoría
 
 ---
-**Desarrollado por Antigravity AI - Ultimate Safety Edition v5.4**
+**Desarrollado por Antigravity AI - Technical Transparency Edition v5.4.2**
