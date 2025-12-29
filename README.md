@@ -1,196 +1,171 @@
-# ANTIGRAVITY GOOGLE ASSISTANT v5.6 (Redmi Note 11 Pro 4G)
-**Smart Assistant Edition - IA Inteligente con Detección Automática**
+# ANTIGRAVITY GOOGLE ASSISTANT v5.7 (Redmi Note 11 Pro 4G)
+**Ultimate Edition - Arquitectura Modular Profesional**
 
-Este repositorio es el centro de control definitivo para transformar tu terminal MediaTek en una experiencia Google pura y certificada. Diseñado bajo estándares de seguridad forense para el chipset Helio G96.
+Este repositorio es el centro de control definitivo para transformar tu terminal MediaTek en una experiencia Google pura y certificada.
 
-## 🚀 Antigravity Google Experience
-A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
-1.  **Certificación GMS:** Herramientas para registrar tu dispositivo y usar Google Wallet/GPay.
-2.  **Seguridad Anti-Brick:** Sistema de validación de integridad de backups que bloquea restauraciones corruptas.
-3.  **Flujo Optimizado:** Menú estructurado por pasos lógicos (Preparación -> Backup -> Flasheo -> Auditoría).
+## 🚀 Novedades v5.7 - Ultimate Edition
 
-## ✨ Novedades v5.6 - Smart Assistant Edition
+### 📦 Arquitectura Modular Completa
+El proyecto ha sido completamente refactorizado con una arquitectura modular profesional:
 
-### 📝 1. Sistema de Perfiles de Usuario (NUEVO)
-
-**Persistencia Inteligente:**
-- 💾 Guarda automáticamente tu progreso en `user_profile.json`
-- 🔄 Restaura tu modo preferido y pasos completados al reiniciar
-- 📊 Tracking de última sesión y fecha de último backup
-- ⚙️ Configuraciones personalizadas persistentes
-
-**Qué se guarda:**
-```json
-{
-  "preferred_mode": "GUIADO",
-  "last_session": "2025-12-29 17:00:00",
-  "completed_steps": ["Step1_Environment", "Step2_Backup"],
-  "device_verified": true,
-  "last_backup_date": "2025-12-29"
-}
+```
+GSI para Redmi nota 11 pro 4G (viva)/
+├── Modules/                        # Módulos independientes
+│   ├── UserProfile.psm1           # Gestión de perfiles
+│   ├── FileIntegrity.psm1         # Verificación SHA256
+│   ├── DeviceDetection.psm1       # Detección de dispositivo
+│   ├── DownloadAssistant.psm1     # Descargas automáticas
+│   ├── Notifications.psm1         # Notificaciones y reportes
+│   └── README.md                  # Documentación de módulos
+├── Tests/                          # Tests unitarios
+│   ├── Test-UserProfile.ps1       # Tests de perfiles
+│   ├── Test-FileIntegrity.ps1     # Tests de integridad
+│   └── Run-AllTests.ps1           # Ejecutor de tests
+├── Instalar_GSI_Modular.ps1       # Script principal modular
+├── download_urls.db                # Base de datos de URLs
+├── file_hashes.db                  # Base de datos de hashes
+└── user_profile.json               # Perfil de usuario
 ```
 
-### 🔒 2. Verificación de Integridad de Archivos (NUEVO)
+### ✨ Funcionalidades de los Módulos
 
-**Seguridad Criptográfica:**
-- ✅ Validación SHA256 de todos los archivos críticos
-- 🛡️ Detección de archivos corruptos o maliciosos
-- 📊 Base de datos de hashes verificados (`file_hashes.db`)
-- 🔍 Calcula y muestra hash para verificación manual si no hay referencia
+#### 📝 UserProfile.psm1
+- `Load-UserProfile`: Carga perfil guardado
+- `Save-UserProfile`: Guarda progreso
+- `Reset-UserProfile`: Reinicia perfil (NUEVO)
+- `Get-UserStatistics`: Estadísticas de progreso (NUEVO)
 
-**Archivos Verificados:**
-- Magisk.apk
-- Shamiko.zip
-- PlayIntegrityFork.zip
-- Platform Tools (ADB/Fastboot)
+#### 🔒 FileIntegrity.psm1
+- `Get-HashDatabase`: Carga hashes SHA256
+- `Test-FileIntegrity`: Verifica integridad de archivos
 
-**Ejemplo de Salida:**
-```
-[V] Magisk v27.0 encontrado
-  Verificando integridad... OK
-[V] Magisk v27.0 - Integridad verificada
-```
+#### 📱 DeviceDetection.psm1
+- `Get-ConnectedDevice`: Detecta y verifica dispositivo vía ADB
 
-### 📱 3. Detección Automática de Dispositivo (NUEVO)
+#### ⬇️ DownloadAssistant.psm1
+- `Get-DownloadDatabase`: Carga URLs de descarga
+- `Start-ToolDownload`: Descarga herramientas automáticamente
 
-**Protección Anti-Brick:**
-- 🔍 Detecta automáticamente el dispositivo conectado vía ADB
-- ✅ Verifica que sea Redmi Note 11 Pro 4G (codename: viva)
-- ⚠️ Bloquea operaciones si el dispositivo es incorrecto
-- 📊 Muestra información completa del dispositivo
+#### 🔔 Notifications.psm1
+- `Send-Notification`: Notificaciones de Windows
+- `Export-HTMLReport`: Genera reportes HTML
 
-**Información Detectada:**
-```
-DISPOSITIVO DETECTADO:
-  Modelo: Redmi Note 11 Pro 4G
-  Codename: viva
-  Android: 13
+### 🧪 Sistema de Tests Unitarios
 
-[V] Dispositivo correcto: Redmi Note 11 Pro 4G (viva)
+Cada módulo tiene tests unitarios completos:
+
+```powershell
+# Ejecutar todos los tests
+.\Tests\Run-AllTests.ps1
+
+# Ejecutar test específico
+.\Tests\Test-UserProfile.ps1
+.\Tests\Test-FileIntegrity.ps1
 ```
 
-**Protección:**
-- Si detecta un dispositivo diferente, muestra advertencia crítica
-- Requiere confirmación explícita para continuar
-- Previene flasheos accidentales en dispositivos incompatibles
+### 🎯 Beneficios de la Modularización
 
-### 🎮 Sistema de 3 Modos de Operación
+✅ **Mantenibilidad**: Código organizado y fácil de mantener
+✅ **Reutilización**: Módulos reutilizables en otros proyectos
+✅ **Testing**: Tests independientes por módulo
+✅ **Claridad**: Separación clara de responsabilidades
+✅ **Escalabilidad**: Fácil añadir nuevas funcionalidades
+✅ **Profesionalidad**: Arquitectura de nivel empresarial
 
-El script ofrece **3 modos claramente diferenciados**:
+## 🎮 Modos de Operación
 
-#### 1️⃣ Modo DEMO (Por Defecto) 🔵
-- **NO ejecuta operaciones reales**
+### 🔵 Modo DEMO (Por Defecto)
+- NO ejecuta operaciones reales
 - Ideal para aprender y practicar
-- Muestra comandos pero no los ejecuta
-- **SEGURO**: No puede dañar tu dispositivo
+- SEGURO: No puede dañar tu dispositivo
 
-#### 2️⃣ Modo GUIADO 🟢
-- **EJECUTA operaciones REALES**
-- Valida todos los prerequisitos
-- Verifica dispositivo correcto
-- Verifica batería (80% mínimo)
-- Verifica espacio en disco (10 GB mínimo)
-- Verifica integridad de archivos
-- **Recomendado para usuarios con experiencia**
+### 🟢 Modo GUIADO
+- EJECUTA operaciones REALES
+- Validación estricta de prerequisitos
+- Verificación de dispositivo, batería y espacio
+- Recomendado para usuarios con experiencia
 
-#### 3️⃣ Modo EXPERTO 🔴
-- **EJECUTA operaciones REALES**
-- Permite saltar pasos
+### 🔴 Modo EXPERTO
+- EJECUTA operaciones REALES
 - Sin validaciones de seguridad
-- **PELIGROSO**: Solo para usuarios avanzados
+- PELIGROSO: Solo para usuarios avanzados
 
-### 🔄 Cómo Cambiar de Modo
+## 🛡️ Capas de Seguridad
 
-Presiona **M** en el menú principal para acceder al selector de modos.
-
-### 🔍 Transparencia Técnica
-- **Comandos visibles**: Cada paso muestra los comandos técnicos exactos
-- **Modo claramente indicado**: El menú principal muestra el modo actual con color
-- **Advertencias contextuales**: En pasos críticos se indica si se ejecutarán comandos reales
-
-### 🎯 Otras Características
-- Sistema de progreso visual con tracking de pasos completados
-- Validación inteligente de prerequisitos
-- Sistema de logs persistente (`antigravity_session.log`)
-- Verificación automática de espacio en disco
-- Verificación automática de batería del dispositivo vía ADB
-- Opción de Recuperación de Emergencia
-
-## 📚 Comandos Técnicos Mostrados
-
-El script muestra los comandos exactos que necesitas ejecutar:
-
-**Backup Real:**
-```bash
-python mtk r nvram,boot,vbmeta .\Backups\[fecha]
-```
-
-**Flasheo Real:**
-```bash
-adb reboot fastboot
-fastboot reboot fastboot
-fastboot erase userdata
-fastboot flash system .\ROMs\system.img
-fastboot -w
-fastboot reboot
-```
-
-## 🛠️ Funcionalidades Maestras
-*   **Safe Operations (v5.6):** Guía de seguridad física integrada.
-*   **Kernel BPF Fix:** Parcheo automático del kernel (boot.img).
-*   **Auditoría Forense:** Generación de certificados de salud.
-*   **Kit de Banca:** Magisk, Shamiko y Play Integrity Fix pre-configurado.
-*   **Detección de Dispositivo:** Verifica que sea el modelo correcto.
-*   **Verificación de Integridad:** Valida archivos con SHA256.
-*   **Perfiles de Usuario:** Guarda y restaura tu progreso.
-
-## 📂 Estructura del Ecosistema
-*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.6**
-*   `user_profile.json`: Perfil de usuario con progreso guardado
-*   `file_hashes.db`: Base de datos de hashes SHA256
-*   `antigravity_session.log`: Log de todas las operaciones
-*   `GOOGLE_EXPERIENCE.md`: Guía para pagos NFC y certificación
-*   `MANUAL_DE_USO.md`: Instrucciones paso a paso
-*   `certificador_salud.ps1`: Utilidad de auditoría técnica
-
-## 🛡️ Seguridad y Confianza
-
-**Capas de Seguridad:**
-1. 📱 **Detección de Dispositivo**: Verifica que sea el modelo correcto
-2. 🔒 **Verificación de Integridad**: Valida archivos con SHA256
-3. 🔋 **Verificación de Batería**: Mínimo 80% para flasheo
-4. 💾 **Verificación de Espacio**: Mínimo 10 GB libres
-5. ✅ **Validación de Prerequisitos**: No permite saltar pasos críticos (modo GUIADO)
-6. 📝 **Logs Completos**: Auditoría de todas las operaciones
+1. 📱 **Detección de Dispositivo**: Verifica modelo correcto
+2. 🔒 **Verificación de Integridad**: Valida archivos SHA256
+3. 🔋 **Verificación de Batería**: Mínimo 80%
+4. 💾 **Verificación de Espacio**: Mínimo 10 GB
+5. ✅ **Validación de Prerequisitos**: Flujo seguro
+6. 📝 **Logs Completos**: Auditoría total
 7. 💾 **Perfiles Persistentes**: Tracking de progreso
 
-## ⚠️ Disclaimer
-El flasheo es un proceso de riesgo. Este asistente minimiza el error humano mediante validaciones automáticas, pero la responsabilidad final recae en el operador. **Sigue siempre las Reglas de Oro detalladas en el manual.**
+## 📊 Nuevas Funcionalidades v5.7
 
-## 📝 Changelog v5.6
+### Estadísticas de Usuario
+```powershell
+$stats = Get-UserStatistics -ProfilePath "user_profile.json"
+# Retorna: CompletedSteps, TotalSteps, CompletionPercent, LastSession, PreferredMode
+```
+
+### Reinicio de Perfil
+```powershell
+Reset-UserProfile -ProfilePath "user_profile.json"
+```
+
+### Reportes HTML
+```powershell
+Export-HTMLReport -ReportsDir "Reportes" -LogFile "antigravity_session.log"
+```
+
+### Notificaciones Windows
+```powershell
+Send-Notification -Title "Operación Completada" -Message "Backup creado exitosamente"
+```
+
+## 🚀 Uso Rápido
+
+### Opción 1: Script Modular (Recomendado)
+```powershell
+.\Instalar_GSI_Modular.ps1
+```
+
+### Opción 2: Ejecutar Tests
+```powershell
+.\Tests\Run-AllTests.ps1
+```
+
+## 📚 Documentación
+
+- **Módulos**: Ver `Modules/README.md`
+- **Manual de Uso**: Ver `MANUAL_DE_USO.md`
+- **Google Experience**: Ver `GOOGLE_EXPERIENCE.md`
+
+## 🔧 Requisitos
+
+- Windows 10/11
+- PowerShell 5.1 o superior
+- ADB/Fastboot (se puede descargar con el asistente)
+- Redmi Note 11 Pro 4G (codename: viva)
+
+## 📝 Changelog v5.7
 
 ### Añadido
-- 📝 **Sistema de Perfiles de Usuario**: Guarda y restaura progreso automáticamente
-- 🔒 **Verificación de Integridad SHA256**: Valida archivos críticos
-- 📱 **Detección Automática de Dispositivo**: Previene flasheos en dispositivos incorrectos
-- 📊 Base de datos de hashes verificados (`file_hashes.db`)
-- 💾 Archivo de perfil de usuario (`user_profile.json`)
-- ✅ Guardado automático de progreso al completar cada paso
-- 🔄 Carga automática de preferencias al iniciar
+- 📦 Arquitectura modular completa
+- 🧪 Sistema de tests unitarios
+- 📊 Estadísticas de usuario
+- 🔄 Reinicio de perfil
+- 📄 Generación de reportes HTML
+- 🔔 Notificaciones de Windows
+- ⬇️ Asistente de descargas automáticas
 
 ### Mejorado
-- 🛡️ Seguridad mejorada con 3 capas adicionales de validación
-- 📊 Mejor tracking de progreso del usuario
-- 🔍 Feedback más detallado sobre estado de archivos
-- ⚠️ Advertencias más claras sobre dispositivos incorrectos
-
-### Seguridad
-- 🚫 Bloqueo automático si el dispositivo no es "viva"
-- 🔒 Detección de archivos corruptos o maliciosos
-- 💾 Persistencia de configuraciones de seguridad
-- 📝 Auditoría completa de todas las operaciones
+- 🎨 Código más limpio y organizado
+- 📚 Mejor documentación
+- 🔒 Seguridad mejorada
+- 🚀 Rendimiento optimizado
 
 ---
-**Desarrollado por Antigravity AI - Smart Assistant Edition v5.6**
+**Desarrollado por Antigravity AI - Ultimate Edition v5.7**
 
-**¿Te gusta el proyecto? Dale una ⭐ en GitHub!**
+**⭐ Si te gusta el proyecto, dale una estrella en GitHub!**
