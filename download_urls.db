@@ -1,0 +1,40 @@
+# Base de datos de URLs de descarga verificadas
+# Actualizado: 2025-12-29
+
+# Platform Tools (ADB/Fastboot)
+[PlatformTools]
+Name=Android Platform Tools
+URL=https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+FileName=platform-tools-latest-windows.zip
+Description=Herramientas ADB y Fastboot oficiales de Google
+
+# Magisk
+[Magisk]
+Name=Magisk v27.0
+URL=https://github.com/topjohnwu/Magisk/releases/download/v27.0/Magisk-v27.0.apk
+FileName=Magisk.apk
+Description=Magisk - Solucion de root universal
+
+# Play Integrity Fix
+[PlayIntegrityFix]
+Name=Play Integrity Fix v16.9
+URL=https://github.com/chiteroman/PlayIntegrityFix/releases/download/v16.9/PlayIntegrityFork_v16.9.zip
+FileName=PlayIntegrityFork.zip
+Description=Modulo para pasar Play Integrity
+
+# Shamiko
+[Shamiko]
+Name=Shamiko v1.0.1
+URL=https://github.com/LSPosed/LSPosed.github.io/releases/download/shamiko-v1.0.1/Shamiko-v1.0.1-release.zip
+FileName=Shamiko.zip
+Description=Modulo para ocultar root de apps bancarias
+
+# RisingOS GSI
+[RisingOS_GSI]
+Name=RisingOS v5.2.1-EOL (ARM64-AB GApps)
+URL=https://sourceforge.net/projects/risingos-official/files/5.x/GAPPS/GSI/RisingOS-5.2.1-FINAL-STABLE-EOL-20240925-GAPPS-OFFICIAL-arm64_bgN.img.xz/download
+FileName=RisingOS_GSI.img.xz
+Description=RisingOS v5.2.1 Final Stable - La mejor version para Viva (GApps incluidas y certificadas)
+
+# NOTA: Estas URLs son ejemplos
+# Para uso real, verificar las URLs oficiales actualizadas
