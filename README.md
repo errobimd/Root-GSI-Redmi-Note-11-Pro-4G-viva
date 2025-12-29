@@ -1,5 +1,5 @@
-# ANTIGRAVITY GOOGLE ASSISTANT v5.2 (Redmi Note 11 Pro 4G)
-**Automatización de Élite para GSI en Redmi Note 11 Pro 4G (viva)**
+# ANTIGRAVITY GOOGLE ASSISTANT v5.4 (Redmi Note 11 Pro 4G)
+**Ultimate Safety Edition - Automatización de Élite para GSI**
 
 Este repositorio es el centro de control definitivo para transformar tu terminal MediaTek en una experiencia Google pura y certificada. Diseñado bajo estándares de seguridad forense para el chipset Helio G96.
 
@@ -9,26 +9,101 @@ A diferencia de otros scripts, esta edición "Google" se enfoca en tres pilares:
 2.  **Seguridad Anti-Brick:** Sistema de validación de integridad de backups que bloquea restauraciones corruptas.
 3.  **Flujo Optimizado:** Menú estructurado por pasos lógicos (Preparación -> Backup -> Flasheo -> Auditoría).
 
+## ✨ Novedades v5.4 - Ultimate Safety Edition
+
+### 🎯 Sistema de Progreso Visual
+- Indicador en tiempo real de qué pasos has completado
+- Marcas visuales [V] para pasos completados, [ ] para pendientes
+- Seguimiento del flujo de trabajo recomendado
+
+### 🛡️ Validación Inteligente de Requisitos
+- **Bloqueo automático**: No puedes flashear sin hacer backup primero
+- **Advertencias contextuales**: El sistema te avisa si intentas saltar pasos críticos
+- **Modo Guiado vs Experto**: Elige entre máxima seguridad o control total
+
+### 📊 Sistema de Logs Persistente
+- Archivo `antigravity_session.log` con todas las acciones realizadas
+- Timestamps precisos para debugging
+- Útil para soporte técnico si algo sale mal
+
+### 💾 Verificación de Espacio en Disco
+- Comprueba automáticamente que tienes al menos 10 GB libres
+- Advertencia temprana antes de iniciar backups o descargas
+- Previene fallos por falta de espacio
+
+### 🔋 Verificación Automática de Batería
+- **Detección automática vía ADB**: Lee el nivel de batería del dispositivo
+- **Requisito mínimo 80%**: No permite flashear con batería baja
+- **Fallback manual**: Si no puede detectar, solicita confirmación del usuario
+- **Previene bricks**: Evita apagados durante el flasheo
+
+### 🆘 Recuperación de Emergencia
+- Opción dedicada (7) para situaciones de bootloop
+- Guía paso a paso para entrar en modo BROM
+- Lista de backups disponibles para restauración
+- Instrucciones claras para usar mtkclient
+
 ## 🛠️ Funcionalidades Maestras
-*   **Safe Operations (v5.2):** Guía de seguridad física integrada (checklist de carga, cables y conexiones).
+*   **Safe Operations (v5.4):** Guía de seguridad física integrada (checklist de carga, cables y conexiones).
 *   **Kernel BPF Fix:** Parcheo automático del kernel (boot.img) para restaurar Internet en Android 14/15.
 *   **Auditoría Forense:** Generación de certificados de salud (`CERTIFICADO_FINAL.txt`) para validar cada byte del sistema.
 *   **Kit de Banca:** Todo lo necesario para Magisk, Shamiko y Play Integrity Fix pre-configurado.
 
 ## 📂 Estructura del Ecosistema
-*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.2**. El motor de todo el proceso.
+*   `Instalar_GSI_RedmiNote11Pro.ps1`: **Script Maestro v5.4**. El motor de todo el proceso.
 *   `GOOGLE_EXPERIENCE.md`: Guía definitiva para pagos NFC y registro Google Service Framework.
 *   `MANUAL_DE_USO.md`: Instrucciones paso a paso con "Reglas de Oro" de seguridad.
 *   `certificador_salud.ps1`: Utilidad de auditoría técnica.
+*   `antigravity_session.log`: Log de todas las operaciones (se crea automáticamente).
+
+## 🎮 Modos de Operación
+
+### Modo Guiado (Por Defecto)
+- Máxima seguridad
+- Valida todos los prerequisitos
+- No permite saltar pasos críticos
+- Recomendado para usuarios sin experiencia
+
+### Modo Experto (Opción E)
+- Control total sobre el proceso
+- Permite saltar pasos (bajo tu responsabilidad)
+- Para usuarios avanzados que saben lo que hacen
+- ⚠️ Puede ser peligroso si se usa incorrectamente
 
 ## 🛡️ Seguridad y Confianza
 El proyecto incluye un sistema de **Auditoría Forense** que valida:
 *   Integridad de binarios (ADB/Fastboot).
 *   Presencia de módulos de seguridad bancaria.
 *   Check de escritura de particiones críticas.
+*   Nivel de batería antes de operaciones críticas.
+*   Espacio en disco disponible.
 
 ## ⚠️ Disclaimer
 El flasheo es un proceso de riesgo. Este asistente minimiza el error humano mediante validaciones automáticas, pero la responsabilidad final recae en el operador. **Sigue siempre las Reglas de Oro detalladas en el manual.**
 
+## 📝 Changelog v5.4
+
+### Añadido
+- Sistema de progreso visual con tracking de pasos completados
+- Validación automática de prerequisitos antes de cada paso
+- Sistema de logs persistente (`antigravity_session.log`)
+- Verificación automática de espacio en disco
+- Verificación automática de batería del dispositivo vía ADB
+- Modo Experto vs Modo Guiado
+- Opción de Recuperación de Emergencia
+- Indicador visual del modo actual en el título
+
+### Mejorado
+- Descripciones más detalladas en cada paso
+- Mejor feedback visual con colores contextuales
+- Mensajes de error más claros y accionables
+- Confirmaciones explícitas antes de operaciones destructivas
+
+### Seguridad
+- Bloqueo automático de flasheo sin backup previo
+- Requisito mínimo de 80% de batería para flasheo
+- Advertencia de espacio en disco insuficiente
+- Log completo de todas las operaciones para auditoría
+
 ---
-**Desarrollado por Antigravity AI - Google Certified Edition**
+**Desarrollado por Antigravity AI - Ultimate Safety Edition v5.4**

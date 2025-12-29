@@ -2,18 +2,147 @@
 $d_WorkDir = $PSScriptRoot
 $d_BackupDir = Join-Path $d_WorkDir "Backups"
 $d_DownloadsDir = Join-Path $d_WorkDir "Descargas"
+$d_LogFile = Join-Path $d_WorkDir "antigravity_session.log"
+
+# Estado del sistema - Tracking de pasos completados
+$global:StepsCompleted = @{
+    "Step1_Environment" = $false
+    "Step2_Backup" = $false
+    "Step3_BankingKit" = $false
+    "Step4_Flash" = $false
+    "Step5_Audit" = $false
+}
+
+$global:ExpertMode = $false
 
 if (!(Test-Path $d_BackupDir)) { mkdir $d_BackupDir -Force | Out-Null }
 
-function LogOk { param($msg) Write-Host " [V] $msg" -ForegroundColor Green }
-function LogInfo { param($msg) Write-Host " [i] $msg" -ForegroundColor Gray }
-function LogErr { param($msg) Write-Host " [X] $msg" -ForegroundColor Red }
-function LogWarn { param($msg) Write-Host " [!] $msg" -ForegroundColor Yellow }
+function LogOk { param($msg) Write-Host " [V] $msg" -ForegroundColor Green; Add-Log "OK: $msg" }
+function LogInfo { param($msg) Write-Host " [i] $msg" -ForegroundColor Gray; Add-Log "INFO: $msg" }
+function LogErr { param($msg) Write-Host " [X] $msg" -ForegroundColor Red; Add-Log "ERROR: $msg" }
+function LogWarn { param($msg) Write-Host " [!] $msg" -ForegroundColor Yellow; Add-Log "WARN: $msg" }
+
+function Add-Log {
+    param($msg)
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    "$timestamp | $msg" | Out-File -FilePath $d_LogFile -Append -Encoding utf8
+}
+
+function Check-DiskSpace {
+    $drive = (Get-Item $d_WorkDir).PSDrive.Name
+    $disk = Get-PSDrive $drive
+    $freeGB = [math]::Round($disk.Free / 1GB, 2)
+    
+    if ($freeGB -lt 10) {
+        LogWarn "Espacio en disco bajo: $freeGB GB disponibles"
+        LogWarn "Se recomienda al menos 10 GB para backups y ROMs"
+        return $false
+    }
+    LogOk "Espacio en disco: $freeGB GB disponibles"
+    return $true
+}
+
+function Check-DeviceBattery {
+    param([int]$MinBattery = 80)
+    
+    LogInfo "Verificando nivel de bateria del dispositivo..."
+    $adbPath = Join-Path $d_WorkDir "Herramientas\platform-tools\adb.exe"
+    
+    if (!(Test-Path $adbPath)) {
+        LogWarn "ADB no encontrado - No se puede verificar bateria"
+        $manual = Read-Host "Confirma manualmente que la bateria esta al $MinBattery% o mas (S/N)"
+        return ($manual -eq "S")
+    }
+    
+    try {
+        $batteryLevel = & $adbPath shell dumpsys battery | Select-String "level:" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }
+        
+        if ($batteryLevel) {
+            $batteryInt = [int]$batteryLevel
+            LogInfo "Nivel de bateria detectado: $batteryInt%"
+            
+            if ($batteryInt -lt $MinBattery) {
+                LogErr "BATERIA INSUFICIENTE: $batteryInt% (Minimo requerido: $MinBattery%)"
+                LogWarn "Carga el dispositivo antes de continuar"
+                return $false
+            }
+            LogOk "Nivel de bateria aceptable: $batteryInt%"
+            return $true
+        } else {
+            LogWarn "No se pudo leer el nivel de bateria"
+            $manual = Read-Host "Confirma manualmente que la bateria esta al $MinBattery% o mas (S/N)"
+            return ($manual -eq "S")
+        }
+    } catch {
+        LogWarn "Error al verificar bateria: $($_.Exception.Message)"
+        $manual = Read-Host "Confirma manualmente que la bateria esta al $MinBattery% o mas (S/N)"
+        return ($manual -eq "S")
+    }
+}
+
+function Show-Progress {
+    Write-Host "`nPROGRESO DEL PROCESO:" -ForegroundColor Cyan
+    $steps = @(
+        @{Name="1. Verificacion Entorno"; Key="Step1_Environment"},
+        @{Name="2. Backup Seguridad"; Key="Step2_Backup"},
+        @{Name="3. Kit Banca"; Key="Step3_BankingKit"},
+        @{Name="4. Flasheo GSI"; Key="Step4_Flash"},
+        @{Name="5. Auditoria Final"; Key="Step5_Audit"}
+    )
+    
+    foreach ($step in $steps) {
+        $status = if ($global:StepsCompleted[$step.Key]) { "[V]" } else { "[ ]" }
+        $color = if ($global:StepsCompleted[$step.Key]) { "Green" } else { "Gray" }
+        Write-Host "  $status $($step.Name)" -ForegroundColor $color
+    }
+    Write-Host ""
+}
+
+function Validate-Prerequisites {
+    param([string]$CurrentStep)
+    
+    if ($global:ExpertMode) {
+        LogWarn "Modo Experto: Saltando validacion de prerequisitos"
+        return $true
+    }
+    
+    switch ($CurrentStep) {
+        "Step2_Backup" {
+            if (!$global:StepsCompleted["Step1_Environment"]) {
+                LogErr "Debes completar primero el Paso 1 (Verificacion de Entorno)"
+                return $false
+            }
+        }
+        "Step3_BankingKit" {
+            if (!$global:StepsCompleted["Step2_Backup"]) {
+                LogWarn "ADVERTENCIA: No has realizado backup de seguridad"
+                $continue = Read-Host "Continuar sin backup es PELIGROSO. Deseas continuar? (S/N)"
+                return ($continue -eq "S")
+            }
+        }
+        "Step4_Flash" {
+            if (!$global:StepsCompleted["Step2_Backup"]) {
+                LogErr "BLOQUEADO: Debes realizar un backup antes de flashear (Paso 2)"
+                Read-Host "Presiona Enter para volver"
+                return $false
+            }
+            if (!(Check-DiskSpace)) {
+                LogErr "Espacio en disco insuficiente"
+                return $false
+            }
+            if (!(Check-DeviceBattery -MinBattery 80)) {
+                LogErr "Nivel de bateria insuficiente para flasheo"
+                return $false
+            }
+        }
+    }
+    return $true
+}
 
 function ShowSafetyTips {
     Clear-Host
     Write-Host "=== REGLAS DE ORO PARA EL FLASHEO REAL ===" -ForegroundColor Yellow
-    Write-Host "1. BATERIA: Minimo 60% de carga."
+    Write-Host "1. BATERIA: Minimo 80% de carga (verificado automaticamente)."
     Write-Host "2. CONEXION: Cable USB original en puerto directo (trasero en PC)."
     Write-Host "3. SOFTWARE: Antivirus desactivado y Drivers VCOM instalados."
     Write-Host "4. MOVIMIENTO: No tocar ni mover el cable durante la transferencia."
@@ -31,6 +160,7 @@ function RunPrep {
     Write-Host "- Verifica que ADB y Fastboot esten instalados correctamente" -ForegroundColor Gray
     Write-Host "- Comprueba la conexion con el dispositivo (si esta conectado)" -ForegroundColor Gray
     Write-Host "- Valida que Python este disponible para herramientas MTK" -ForegroundColor Gray
+    Write-Host "- Verifica espacio en disco disponible" -ForegroundColor Gray
     Write-Host ""
     Write-Host "TIEMPO ESTIMADO: 30 segundos" -ForegroundColor DarkGray
     Write-Host ""
@@ -39,13 +169,28 @@ function RunPrep {
     Clear-Host
     Write-Host "--- VERIFICANDO COMPONENTES ---" -ForegroundColor Cyan
     LogInfo "Comprobando ADB y Fastboot..."
+    
+    $allOk = $true
     if (Test-Path "$d_WorkDir\Herramientas\platform-tools\adb.exe") { 
         LogOk "ADB encontrado y listo para usar" 
         LogOk "Fastboot disponible para flasheo"
     } else { 
         LogErr "Faltan herramientas ADB/Fastboot" 
         LogWarn "Necesitas descargarlas antes de continuar"
+        $allOk = $false
     }
+    
+    if (Check-DiskSpace) {
+        # Espacio OK
+    } else {
+        $allOk = $false
+    }
+    
+    if ($allOk) {
+        $global:StepsCompleted["Step1_Environment"] = $true
+        LogOk "PASO 1 COMPLETADO"
+    }
+    
     Write-Host ""
     Write-Host "SIGUIENTE PASO RECOMENDADO:" -ForegroundColor Yellow
     Write-Host "Opcion 2 - Realizar backup de seguridad (CRITICO)" -ForegroundColor Green
@@ -54,6 +199,8 @@ function RunPrep {
 }
 
 function RunBackup {
+    if (!(Validate-Prerequisites "Step2_Backup")) { return }
+    
     Clear-Host
     Write-Host "========================================================" -ForegroundColor Cyan
     Write-Host "      PASO 2: BACKUP DE SEGURIDAD [CRITICO]" -ForegroundColor Cyan
@@ -88,6 +235,8 @@ function RunBackup {
     }
     Write-Host ""
     LogOk "BACKUP COMPLETADO: $folderName"
+    $global:StepsCompleted["Step2_Backup"] = $true
+    
     Write-Host ""
     Write-Host "SIGUIENTE PASO RECOMENDADO:" -ForegroundColor Yellow
     Write-Host "Opcion 3 - Preparar modulos de Google Pay y Banca" -ForegroundColor White
@@ -96,6 +245,8 @@ function RunBackup {
 }
 
 function RunGPayKit {
+    if (!(Validate-Prerequisites "Step3_BankingKit")) { return }
+    
     Clear-Host
     Write-Host "========================================================" -ForegroundColor Cyan
     Write-Host "    PASO 3: KIT DE GOOGLE PAY Y BANCA" -ForegroundColor Cyan
@@ -118,13 +269,21 @@ function RunGPayKit {
     Write-Host "--- VERIFICANDO MODULOS DE SEGURIDAD ---" -ForegroundColor Cyan
     LogInfo "Comprobando archivos en carpeta Descargas..."
     $files = @("Magisk.apk", "Shamiko.zip", "PlayIntegrityFork.zip")
+    $allFound = $true
     foreach ($f in $files) {
         if (Test-Path "$d_DownloadsDir\$f") { 
             LogOk "$f encontrado y listo" 
         } else { 
             LogWarn "$f no encontrado (necesario descargar)" 
+            $allFound = $false
         }
     }
+    
+    if ($allFound) {
+        $global:StepsCompleted["Step3_BankingKit"] = $true
+        LogOk "PASO 3 COMPLETADO"
+    }
+    
     Write-Host ""
     Write-Host "SIGUIENTE PASO RECOMENDADO:" -ForegroundColor Yellow
     Write-Host "Opcion 4 - Iniciar flasheo de GSI" -ForegroundColor Red
@@ -133,6 +292,8 @@ function RunGPayKit {
 }
 
 function RunFlashGSI {
+    if (!(Validate-Prerequisites "Step4_Flash")) { return }
+    
     Clear-Host
     Write-Host "========================================================" -ForegroundColor Red
     Write-Host "        PASO 4: FLASHEO DE GSI [CRITICO]" -ForegroundColor Red
@@ -144,10 +305,11 @@ function RunFlashGSI {
     Write-Host "- Configura las particiones para el arranque" -ForegroundColor Gray
     Write-Host ""
     Write-Host "REQUISITOS PREVIOS:" -ForegroundColor Yellow
-    Write-Host "[V] Backup realizado (Paso 2)" -ForegroundColor Green
-    Write-Host "[V] Bateria minimo 60%" -ForegroundColor Green
-    Write-Host "[V] Cable USB original conectado" -ForegroundColor Green
-    Write-Host "[V] Bootloader desbloqueado" -ForegroundColor Green
+    $check1 = if ($global:StepsCompleted["Step2_Backup"]) { "[V]" } else { "[X]" }
+    Write-Host "$check1 Backup realizado (Paso 2)" -ForegroundColor $(if ($global:StepsCompleted["Step2_Backup"]) { "Green" } else { "Red" })
+    Write-Host "[?] Bateria minimo 80% (se verificara automaticamente)" -ForegroundColor Yellow
+    Write-Host "[?] Cable USB original conectado" -ForegroundColor Yellow
+    Write-Host "[?] Bootloader desbloqueado" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "TIEMPO ESTIMADO: 10-15 minutos" -ForegroundColor DarkGray
     Write-Host ""
@@ -165,6 +327,8 @@ function RunFlashGSI {
         LogWarn "NO DESCONECTES EL CABLE AHORA..."
         Start-Sleep 2
         LogOk "FLASHEO COMPLETADO CON EXITO"
+        $global:StepsCompleted["Step4_Flash"] = $true
+        
         Write-Host ""
         Write-Host "SIGUIENTE PASO RECOMENDADO:" -ForegroundColor Yellow
         Write-Host "Opcion 5 - Certificar salud del sistema" -ForegroundColor Green
@@ -180,17 +344,74 @@ function RunHealthCheck {
     Write-Host "--- AUDITORIA: CERTIFICAR SALUD DEL SISTEMA ---" -ForegroundColor Green
     if (Test-Path "$d_WorkDir\certificador_salud.ps1") {
         powershell -ExecutionPolicy Bypass -File "$d_WorkDir\certificador_salud.ps1"
+        $global:StepsCompleted["Step5_Audit"] = $true
     } else {
         LogErr "No se encuentra el script certificador."
     }
     Read-Host "`nEnter para volver"
 }
 
+function Show-EmergencyRecovery {
+    Clear-Host
+    Write-Host "========================================================" -ForegroundColor Red
+    Write-Host "        RECUPERACION DE EMERGENCIA" -ForegroundColor Red
+    Write-Host "========================================================" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Si tu dispositivo no arranca o esta en bootloop:" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "PASO 1: Entrar en modo BROM" -ForegroundColor Cyan
+    Write-Host "  1. Apaga completamente el telefono" -ForegroundColor Gray
+    Write-Host "  2. Manten presionado Vol+ y Vol- simultaneamente" -ForegroundColor Gray
+    Write-Host "  3. Conecta el cable USB al PC (sin soltar botones)" -ForegroundColor Gray
+    Write-Host "  4. Espera a que Windows detecte el dispositivo" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "PASO 2: Restaurar Backup" -ForegroundColor Cyan
+    Write-Host "  1. Usa mtkclient para restaurar las particiones" -ForegroundColor Gray
+    Write-Host "  2. Comando: python mtk rl <carpeta_backup>" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "Backups disponibles:" -ForegroundColor Yellow
+    if (Test-Path $d_BackupDir) {
+        $backups = Get-ChildItem -Path $d_BackupDir -Directory | Sort-Object LastWriteTime -Descending
+        foreach ($b in $backups) {
+            Write-Host "  - $($b.Name)" -ForegroundColor Green
+        }
+    } else {
+        Write-Host "  No hay backups disponibles" -ForegroundColor Red
+    }
+    Write-Host ""
+    Read-Host "Presiona Enter para volver"
+}
+
+function Toggle-ExpertMode {
+    $global:ExpertMode = !$global:ExpertMode
+    $status = if ($global:ExpertMode) { "ACTIVADO" } else { "DESACTIVADO" }
+    $color = if ($global:ExpertMode) { "Yellow" } else { "Green" }
+    Clear-Host
+    Write-Host "========================================================" -ForegroundColor $color
+    Write-Host "MODO EXPERTO: $status" -ForegroundColor $color
+    Write-Host "========================================================" -ForegroundColor $color
+    Write-Host ""
+    if ($global:ExpertMode) {
+        Write-Host "ADVERTENCIA: En modo experto puedes saltar pasos" -ForegroundColor Yellow
+        Write-Host "Esto puede ser PELIGROSO si no sabes lo que haces" -ForegroundColor Red
+    } else {
+        Write-Host "Modo guiado activado - Maximo seguridad" -ForegroundColor Green
+    }
+    Write-Host ""
+    Read-Host "Presiona Enter para continuar"
+}
+
+# Inicializar log
+Add-Log "=== NUEVA SESION INICIADA ==="
+
 while ($true) {
     Clear-Host
-    Write-Host "ANTIGRAVITY GOOGLE ASSISTANT v5.3 [ENHANCED UX]" -ForegroundColor Cyan
+    $modeIndicator = if ($global:ExpertMode) { "[MODO EXPERTO]" } else { "[MODO GUIADO]" }
+    Write-Host "ANTIGRAVITY GOOGLE ASSISTANT v5.4 [ULTIMATE SAFETY] $modeIndicator" -ForegroundColor Cyan
     Write-Host "========================================================" -ForegroundColor Cyan
-    Write-Host ""
+    
+    Show-Progress
+    
     Write-Host "FLUJO DE TRABAJO RECOMENDADO:" -ForegroundColor Yellow
     Write-Host "1 -> 2 -> 3 -> 4 -> 5 (Sigue este orden para maxima seguridad)" -ForegroundColor Gray
     Write-Host ""
@@ -218,15 +439,24 @@ while ($true) {
     Write-Host " 6. [CONSEJOS] Guia de Seguridad Fisica" -ForegroundColor Yellow
     Write-Host "    > Lee las reglas de oro antes de flashear" -ForegroundColor Gray
     Write-Host ""
+    Write-Host " 7. [EMERGENCIA] Recuperacion de Emergencia" -ForegroundColor Red
+    Write-Host "    > Restaurar desde backup si algo salio mal" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host " E. Cambiar Modo (Experto/Guiado)" -ForegroundColor Magenta
     Write-Host " Q. Finalizar y Salir"
     Write-Host "========================================================" -ForegroundColor Cyan
     
-    $v_op = Read-Host "`nSelecciona una opcion (1-6 o Q)"
+    $v_op = Read-Host "`nSelecciona una opcion (1-7, E o Q)"
     if ($v_op -eq "1") { RunPrep }
     elseif ($v_op -eq "2") { RunBackup }
     elseif ($v_op -eq "3") { RunGPayKit }
     elseif ($v_op -eq "4") { RunFlashGSI }
     elseif ($v_op -eq "5") { RunHealthCheck }
     elseif ($v_op -eq "6") { ShowSafetyTips }
-    elseif ($v_op -eq "Q") { break }
+    elseif ($v_op -eq "7") { Show-EmergencyRecovery }
+    elseif ($v_op -eq "E") { Toggle-ExpertMode }
+    elseif ($v_op -eq "Q") { 
+        Add-Log "=== SESION FINALIZADA ==="
+        break 
+    }
 }
