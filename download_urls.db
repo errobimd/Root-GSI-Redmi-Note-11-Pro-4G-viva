@@ -1,5 +1,5 @@
 # Base de datos de URLs de descarga verificadas
-# Actualizado: 2025-12-29
+# Actualizado: 2025-12-30
 
 # Platform Tools (ADB/Fastboot)
 [PlatformTools]
@@ -35,6 +35,20 @@ Name=RisingOS v5.2.1-EOL (ARM64-AB GApps)
 URL=https://sourceforge.net/projects/risingos-official/files/5.x/GAPPS/GSI/RisingOS-5.2.1-FINAL-STABLE-EOL-20240925-GAPPS-OFFICIAL-arm64_bgN.img.xz/download
 FileName=RisingOS_GSI.img.xz
 Description=RisingOS v5.2.1 Final Stable - La mejor version para Viva (GApps incluidas y certificadas)
+
+# crDroid GSI
+[crDroid_GSI]
+Name=crDroid 10.7 BETA (ARM64 Android 14)
+URL=https://sourceforge.net/projects/gsi-projects/files/A14/crDroid/10.7/BETA/arm64-ro-g.img.xz/download
+FileName=crDroid_GSI.img.xz
+Description=crDroid 10.7 BETA - Version mas reciente (Requiere flashear GApps por separado)
+
+# NikGapps para crDroid
+[NikGapps_crDroid]
+Name=NikGapps Core Android 14 (ARM64)
+URL=https://sourceforge.net/projects/nikgapps/files/Releases/NikGapps-U/31-Dec-2024/NikGapps-core-arm64-14-20241231-signed.zip/download
+FileName=NikGapps_Core_A14.zip
+Description=NikGapps Core para crDroid Android 14 - Paquete basico de Google Apps
 
 # NOTA: Estas URLs son ejemplos
 # Para uso real, verificar las URLs oficiales actualizadas
